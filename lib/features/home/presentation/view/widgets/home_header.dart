@@ -48,7 +48,7 @@ class HomeHeader extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(width: 38.w),
+              SizedBox(width: 25.w),
               IconButton(
                 icon: Icon(Icons.notifications_outlined, color: Colors.white),
                 onPressed: () {

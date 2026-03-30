@@ -1,13 +1,18 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:sizer/sizer.dart';
 
 import 'core/utils/color.dart';
-import 'features/home/presentation/view/home_view.dart';
-import 'features/splash/presentation/view/splash_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

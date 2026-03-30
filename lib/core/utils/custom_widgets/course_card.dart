@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/routing/app_router.dart';
+import 'package:sizer/sizer.dart';
 
 class CourseCard extends StatelessWidget {
   final String imageUrl;
   final String title;
   final String instructorName;
   final String instructorAvatar;
-  final double progress; 
+  final double progress;
 
   const CourseCard({
     super.key,
@@ -19,7 +22,7 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 170, 
+      width: 170,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -39,14 +42,23 @@ class CourseCard extends StatelessWidget {
           // Course Image
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(imageUrl, height: 110, width: double.infinity, fit: BoxFit.cover),
+            child: Image.asset(
+              imageUrl,
+              height: 110,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(height: 12),
-          
+
           // Title
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1A1C3D)),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Color(0xFF1A1C3D),
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -55,10 +67,19 @@ class CourseCard extends StatelessWidget {
           // Instructor Row
           Row(
             children: [
-              CircleAvatar(radius: 14, backgroundImage: NetworkImage(instructorAvatar)),
+              CircleAvatar(
+                radius: 14,
+                backgroundImage: NetworkImage(instructorAvatar),
+              ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(instructorName, style: const TextStyle(color: Color(0xFF1A1C3D), fontSize: 14)),
+                child: Text(
+                  instructorName,
+                  style: const TextStyle(
+                    color: Color(0xFF1A1C3D),
+                    fontSize: 14,
+                  ),
+                ),
               ),
             ],
           ),
@@ -77,7 +98,13 @@ class CourseCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text("${(progress * 100).toInt()}%", style: const TextStyle(color: Color(0xFF5E5CE6), fontWeight: FontWeight.bold)),
+              Text(
+                "${(progress * 100).toInt()}%",
+                style: const TextStyle(
+                  color: Color(0xFF5E5CE6),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 15),
@@ -86,14 +113,21 @@ class CourseCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                context.go(AppRouter.lecturePath);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5E5CE6),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 3.h),
               ),
-              child: const Text("View Lecture", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              child: const Text(
+                "View Lecture",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],

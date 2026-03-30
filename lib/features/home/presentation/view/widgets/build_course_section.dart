@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/assets.dart';
-import 'package:learnify_app/features/home/presentation/view/widgets/course_card.dart';
 import 'package:learnify_app/features/home/presentation/view/widgets/row_show.dart';
 import 'package:sizer/sizer.dart';
+
+import '../../../../../core/utils/custom_widgets/course_card.dart';
 
 class BuildCourseSection extends StatelessWidget {
   const BuildCourseSection({super.key});
@@ -11,11 +14,16 @@ class BuildCourseSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        RowShow(title: "Courses :", subTitle: "Show All"),
+        RowShow(
+          title: "Courses :",
+          subTitle: "Show All",
+          onPressed: () {
+            context.go(AppRouter.courseDetailsPath);
+          },
+        ),
 
-        
         Padding(
-          padding:  EdgeInsets.symmetric(vertical: 3.0.h, horizontal: 4.0.w),
+          padding: EdgeInsets.symmetric(vertical: 3.0.h, horizontal: 4.0.w),
           child: Row(
             children: [
               CourseCard(
@@ -36,7 +44,6 @@ class BuildCourseSection extends StatelessWidget {
             ],
           ),
         ),
-        // ),
       ],
     );
   }

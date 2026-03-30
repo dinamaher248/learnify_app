@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/features/notifications/presentation/view/notification_tile.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../../core/utils/app_styles.dart';
+import '../../../../../core/utils/custom_widgets/app_bar_widget.dart';
 import '../../../data/models/notification_model.dart';
 
 class NotificationView extends StatelessWidget {
@@ -12,21 +11,7 @@ class NotificationView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: Text(
-          "Notification",
-          style: AppStyles.style24SemiBold.copyWith(color: Color(0xFF1A237E)),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A237E)),
-          onPressed: () {
-            context.go(AppRouter.homePath);
-          },
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: AppBarWidget(title: "Notification"),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [

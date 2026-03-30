@@ -4,9 +4,10 @@ import 'package:sizer/sizer.dart';
 import '../../../../../core/utils/app_styles.dart';
 
 class RowShow extends StatelessWidget {
-  RowShow({super.key, required this.title, required this.subTitle});
+  RowShow({super.key, required this.title, required this.subTitle,this.onPressed});
   String title;
   String subTitle;
+  void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class RowShow extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           child: TextButton(
-            onPressed: () {},
+            onPressed: onPressed,
             child: Text(
               subTitle,
               style: AppStyles.style14MediumInter.copyWith(
