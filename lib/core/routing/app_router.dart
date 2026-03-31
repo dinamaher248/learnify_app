@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:learnify_app/features/auth/presentation/view/main_login.dart';
 import 'package:learnify_app/features/courses/presentation/view/course_view.dart';
 import 'package:learnify_app/features/home/presentation/view/home_view.dart';
 import 'package:learnify_app/features/lectures/presentation/view/lecture_view.dart';
@@ -20,7 +21,7 @@ class AppRouter {
   static String lecturePath = '/lecture';
   static String lectureDetailsPath = '/lecture-details';
   static final GoRouter router = GoRouter(
-    initialLocation: courseDetailsPath,
+    initialLocation: loginPath,
     routes: [
       GoRoute(
         path: splashPath,
@@ -30,7 +31,7 @@ class AppRouter {
         path: notificationPath,
         builder: (context, state) => NotificationView(),
       ),
-      GoRoute(path: loginPath, builder: (context, state) => LoginScreen()),
+      GoRoute(path: loginPath, builder: (context, state) => MainLogin()),
       GoRoute(
         path: forgotPasswordPath,
         builder: (context, state) => ForgotPasswordScreen(),

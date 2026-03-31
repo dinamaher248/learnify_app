@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
-import 'package:learnify_app/core/utils/custom_widgets/app_bar_widget.dart';
-
-import '../../../home/presentation/view/widgets/bottom_nav_bar.dart';
-import '../../../home/presentation/view/widgets/floating_action_button.dart';
 import '../../data/models/lecture_model.dart';
 import 'widgets/lecture_card.dart';
 

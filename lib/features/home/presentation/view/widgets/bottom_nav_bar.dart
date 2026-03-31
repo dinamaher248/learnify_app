@@ -13,7 +13,6 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomAppBar(
       clipBehavior: Clip.antiAlias,
-     // shape: CircularNotchedRectangle(),
       notchMargin: 8,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

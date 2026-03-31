@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
-
 import '../../../../../core/utils/app_styles.dart';
 
 class LectureCard extends StatelessWidget {
