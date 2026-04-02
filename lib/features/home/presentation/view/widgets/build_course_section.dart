@@ -18,7 +18,7 @@ class BuildCourseSection extends StatelessWidget {
           title: "Courses :",
           subTitle: "Show All",
           onPressed: () {
-            context.go(AppRouter.courseDetailsPath);
+            context.push(AppRouter.courseDetailsPath);
           },
         ),
 

@@ -6,10 +6,18 @@ import 'package:learnify_app/features/lectures/presentation/view/lecture_view.da
 import 'package:learnify_app/features/notifications/presentation/view/widgets/notification_view.dart';
 import 'package:learnify_app/features/splash/presentation/view/splash_screen.dart';
 
+import '../../features/assignment/presentation/view/assignment_view.dart';
+import '../../features/attendance/presentation/view/attendance_view.dart';
+import '../../features/attendance/presentation/view/confirmation_view.dart';
 import '../../features/auth/presentation/view/forget_password.dart';
-import '../../features/auth/presentation/view/login.dart';
 import '../../features/home/presentation/view/main_scaffold.dart';
 import '../../features/lectures/presentation/view/lecture_details_view.dart';
+import '../../features/lectures/presentation/view/lecture_pdf_views.dart';
+import '../../features/quiz/presentation/view/review_view.dart';
+import '../../features/quiz/presentation/view/widgets/essay_quiz_view.dart';
+import '../../features/quiz/presentation/view/quiz_view.dart';
+import '../../features/quiz/presentation/view/result.dart';
+import '../../features/video/presentation/view/video_view.dart';
 
 class AppRouter {
   static String splashPath = '/';
@@ -20,8 +28,20 @@ class AppRouter {
   static String courseDetailsPath = '/course-details';
   static String lecturePath = '/lecture';
   static String lectureDetailsPath = '/lecture-details';
+  static String attendancePath = '/attendance';
+  static String confirmationPath = '/confirmation';
+  static String lecturePdfPath = '/lecture-pdf';
+  static String essayQuizPath = '/essay-quiz';
+  static String resultPath = '/result';
+  static String assignmentPath = '/assignment';
+  static String quizPath = '/quiz';
+  static String assignmentDetailsPath = '/assignment-details';
+  static String quizDetailsPath = '/quiz-details';
+  static String videoPath = '/video';
+  static String reviewPath = '/review';
+
   static final GoRouter router = GoRouter(
-    initialLocation: loginPath,
+    initialLocation: lectureDetailsPath,
     routes: [
       GoRoute(
         path: splashPath,
@@ -36,6 +56,29 @@ class AppRouter {
         path: forgotPasswordPath,
         builder: (context, state) => ForgotPasswordScreen(),
       ),
+      GoRoute(
+        path: attendancePath,
+        builder: (context, state) => AttendanceDialog(),
+      ),
+      GoRoute(
+        path: confirmationPath,
+        builder: (context, state) => ConfirmationView(),
+      ),
+      GoRoute(
+        path: lecturePdfPath,
+        builder: (context, state) => LecturePdfView(),
+      ),
+      GoRoute(
+        path: resultPath,
+        builder: (context, state) => const ResultView(),
+      ),
+      GoRoute(
+        path: assignmentPath,
+        builder: (context, state) => const AssignmentView(),
+      ),
+      GoRoute(path: reviewPath, builder: (context, state) => const ReviewView()),
+      GoRoute(path: quizPath, builder: (context, state) => const QuizView()),
+      GoRoute(path: videoPath, builder: (context, state) => const VideoView()),
       ShellRoute(
         builder: (context, state, child) {
           return MainScaffold(child: child);
@@ -58,5 +101,4 @@ class AppRouter {
       ),
     ],
   );
-  
 }

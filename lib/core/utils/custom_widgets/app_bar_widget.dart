@@ -19,7 +19,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget { // 1
       centerTitle: true,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: Color(0xFF24234D)),
-        onPressed: () => context.go(AppRouter.homePath),
+        onPressed: () => context.pop(),
       ),
       backgroundColor: Colors.transparent,
       elevation: 0,

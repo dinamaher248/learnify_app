@@ -52,7 +52,7 @@ class HomeHeader extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.notifications_outlined, color: Colors.white),
                 onPressed: () {
-                  context.go(AppRouter.notificationPath);
+                  context.push(AppRouter.notificationPath);
                 },
               ),
             ],

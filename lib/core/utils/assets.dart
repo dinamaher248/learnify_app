@@ -11,5 +11,6 @@ class AppAssets {
   static const String ai_image = "assets/images/Vector.png";
   static const String collage_image = "assets/images/Student.png";
   static const String doc_image = "assets/images/doctors.png";
-
+  static const String video_icon = "assets/images/video_icon.png";
+  static const String lecture_video_view = "assets/images/lecture_video_View.png";
   }

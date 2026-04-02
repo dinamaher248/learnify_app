@@ -114,7 +114,7 @@ class CourseCard extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                context.go(AppRouter.lecturePath);
+                context.push(AppRouter.lecturePath);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5E5CE6),

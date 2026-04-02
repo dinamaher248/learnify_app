@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
           ).showSnackBar(SnackBar(content: Text("Login Success")));
 
-          context.go(AppRouter.homePath);
+          context.push(AppRouter.homePath);
         }
 
         if (state is LoginFailure) {

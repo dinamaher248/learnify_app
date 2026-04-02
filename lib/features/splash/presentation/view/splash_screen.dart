@@ -64,7 +64,6 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 250,
               height: 70,
               decoration: BoxDecoration(
-                // لون مقارب للظل الداكن في الصورة
                 color: const Color(0xFF25234D).withOpacity(0.8),
                 borderRadius: const BorderRadius.all(
                   Radius.elliptical(250, 70),

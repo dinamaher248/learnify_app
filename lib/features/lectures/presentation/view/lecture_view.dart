@@ -51,8 +51,7 @@ class LectureView extends StatelessWidget {
           subtitle: lecture.subTitle,
           imagePath: lecture.image,
           onTap: () {
-            context.go(AppRouter.lectureDetailsPath);
-            print("Tapped on ${lecture.title}");
+            context.push(AppRouter.lectureDetailsPath);
           },
         );
       },
