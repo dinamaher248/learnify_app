@@ -41,7 +41,7 @@ class AppRouter {
   static String reviewPath = '/review';
 
   static final GoRouter router = GoRouter(
-    initialLocation: lectureDetailsPath,
+    initialLocation: loginPath,
     routes: [
       GoRoute(
         path: splashPath,

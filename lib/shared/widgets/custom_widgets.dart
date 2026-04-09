@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/utils/app_styles.dart';
 import '../../core/utils/color.dart';
 
 // ==========================================
@@ -35,7 +36,9 @@ class CustomTextField extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: hasError ? const Color(0xFFFFD6D6) : AppColors.secondaryColor.withOpacity(0.5),
+            color: hasError
+                ? const Color(0xFFFFD6D6)
+                : AppColors.secondaryColor.withOpacity(0.5),
             border: Border.all(
               color: hasError ? Colors.red : Colors.transparent,
               width: 1,
@@ -46,18 +49,30 @@ class CustomTextField extends StatelessWidget {
             obscureText: obscureText,
             style: const TextStyle(color: AppColors.textColor),
             decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xFFC6D1FB),
               hintText: hintText,
-              hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              hintStyle: AppStyles.style16Medium.copyWith(
+                color: Color(0xff6B6868),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               prefixIcon: prefixIcon != null
-                  ? Icon(prefixIcon, color: Colors.grey.shade700)
+                  ? Icon(prefixIcon, color: Color(0xff6B6868))
                   : null,
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
-                        obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                        color: Colors.grey.shade700,
+                        obscureText
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: Color(0xff6B6868),
                       ),
                       onPressed: onSuffixTap,
                     )
@@ -87,7 +102,7 @@ class CustomTextField extends StatelessWidget {
 // ==========================================
 class PrimaryButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const PrimaryButton({
     super.key,

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/shared/widgets/custom_widgets.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../../../core/utils/assets.dart';
 import '../../../../core/utils/color.dart';
+import '../view_models/auth_cubit.dart';
+import '../view_models/auth_state.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,6 +18,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final PageController _pageController = PageController();
+
   int _currentStep = 0;
 
   // --- Step 1 Variables ---
@@ -22,11 +27,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   // --- Step 2 Variables ---
   final List<TextEditingController> _otpControllers = List.generate(
-    4,
+    6,
     (index) => TextEditingController(),
   );
   final List<FocusNode> _otpFocusNodes = List.generate(
-    4,
+    6,
     (index) => FocusNode(),
   );
 
@@ -59,13 +64,40 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       _contactError = null;
       if (_contactController.text.isEmpty ||
           _contactController.text.length < 8) {
-        _contactError = "Please enter a valid phone or email .";
+        _contactError = "Please enter a valid phone or email.";
       }
     });
 
     if (_contactError == null) {
-      _goToNextStep();
+      // Call forgot password API
+      BlocProvider.of<AuthCubit>(context)
+          .forgotPassword(_contactController.text)
+          .then((_) => _goToNextStep())
+          .catchError((e) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e.toString())));
+          });
     }
+  }
+
+  void _verifyOtp() {
+    final otp = _otpControllers.map((e) => e.text).join();
+    if (otp.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter the 6-digit OTP")),
+      );
+      return;
+    }
+
+    BlocProvider.of<AuthCubit>(context)
+        .verifyOtp(_contactController.text, otp)
+        .then((_) => _goToNextStep())
+        .catchError((e) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(e.toString())));
+        });
   }
 
   void _submitStep3() {
@@ -76,20 +108,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       if (_newPasswordController.text.length < 6 ||
           !_newPasswordController.text.contains(RegExp(r'[0-9]'))) {
         _newPasswordError =
-            "sorry.. your password must be at least 6 characters in length, and contain at least 1 number.";
+            "Your password must be at least 6 characters and contain at least 1 number.";
       }
 
       if (_confirmPasswordController.text != _newPasswordController.text) {
         _confirmPasswordError =
-            "Confirm password does not match the password you entered .";
+            "Confirm password does not match the password you entered.";
       }
     });
 
     if (_newPasswordError == null && _confirmPasswordError == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password Reset Successfully!')),
-      );
-      Navigator.pop(context);
+      BlocProvider.of<AuthCubit>(context)
+          .resetPasswordWithToken(
+            emailOrId: _contactController.text,
+            newPassword: _newPasswordController.text,
+            resetToken: _otpControllers.map((e) => e.text).join(),
+          )
+          .then((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Password Reset Successfully!')),
+            );
+            Navigator.pop(context);
+          })
+          .catchError((e) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(e.toString())));
+          });
     }
   }
 
@@ -121,72 +166,91 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: _goToPreviousStep,
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 15,
-            child: Center(
-              child: Image.asset(AppAssets.splashLogo, height: 70, width: 70),
-            ),
-          ),
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is VerifyOtpSuccess) {
+          _goToNextStep();
+        }
 
-          Expanded(
-            flex: 85,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 20.0,
+        if (state is VerifyOtpFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+
+          for (var controller in _otpControllers) {
+            controller.clear();
+          }
+
+          FocusScope.of(context).requestFocus(_otpFocusNodes[0]);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.primaryColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: _goToPreviousStep,
+          ),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              flex: 15,
+              child: Center(
+                child: Image.asset(AppAssets.splashLogo, height: 70, width: 70),
               ),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF8F8F8),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
+            ),
+
+            Expanded(
+              flex: 85,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 20.0,
+                ),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF8F8F8),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: List.generate(3, (index) {
+                        return Expanded(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: index <= _currentStep
+                                  ? AppColors.primaryColor
+                                  : AppColors.secondaryColor.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 24),
+
+                    Expanded(
+                      child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [_buildStep1(), _buildStep2(), _buildStep3()],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                children: [
-                  Row(
-                    children: List.generate(3, (index) {
-                      return Expanded(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: index <= _currentStep
-                                ? AppColors.primaryColor
-                                : AppColors.secondaryColor.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 24),
-
-                  Expanded(
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [_buildStep1(), _buildStep2(), _buildStep3()],
-                    ),
-                  ),
-                ],
-              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -280,22 +344,30 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(4, (index) {
+            children: List.generate(6, (index) {
               return SizedBox(
-                width: 65,
-                height: 65,
+                width: 12.w,
+                height: 10.h,
                 child: TextFormField(
                   controller: _otpControllers[index],
                   focusNode: _otpFocusNodes[index],
                   onChanged: (value) {
                     if (value.length == 1) {
-                      if (index < 3) {
+                      if (index < 5) {
                         FocusScope.of(
                           context,
                         ).requestFocus(_otpFocusNodes[index + 1]);
                       } else {
                         FocusScope.of(context).unfocus();
-                        _goToNextStep();
+
+                        String otp = _otpControllers.map((e) => e.text).join();
+
+                        if (otp.length == 6) {
+                          context.read<AuthCubit>().verifyOtp(
+                            _contactController.text,
+                            otp,
+                          );
+                        }
                       }
                     } else if (value.isEmpty && index > 0) {
                       FocusScope.of(
@@ -345,7 +417,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
           Center(
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.read<AuthCubit>().resendOtp(_contactController.text);
+              },
               child: const Text(
                 "Send Again",
                 style: TextStyle(
