@@ -19,12 +19,3 @@ class MainLogin extends StatelessWidget {
   }
 }
 
-
-class MainActive extends StatelessWidget {
-  const MainActive({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

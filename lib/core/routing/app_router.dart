@@ -3,6 +3,9 @@ import 'package:learnify_app/features/auth/presentation/view/main_login.dart';
 import 'package:learnify_app/features/courses/presentation/view/course_view.dart';
 import 'package:learnify_app/features/home/presentation/view/home_view.dart';
 import 'package:learnify_app/features/lectures/presentation/view/lecture_view.dart';
+import 'package:learnify_app/features/messages/presentation/view/chat_view.dart';
+import 'package:learnify_app/features/messages/presentation/view/message_view.dart';
+import 'package:learnify_app/features/messages/presentation/view/profile_view.dart';
 import 'package:learnify_app/features/notifications/presentation/view/widgets/notification_view.dart';
 import 'package:learnify_app/features/splash/presentation/view/splash_screen.dart';
 
@@ -37,11 +40,14 @@ class AppRouter {
   static String quizPath = '/quiz';
   static String assignmentDetailsPath = '/assignment-details';
   static String quizDetailsPath = '/quiz-details';
+  static String chatPath = '/chatPath';
+  static String messageViewPath = '/message_View';
   static String videoPath = '/video';
   static String reviewPath = '/review';
+  static String profilePath = '/profile';
 
   static final GoRouter router = GoRouter(
-    initialLocation: loginPath,
+    initialLocation: messageViewPath,
     routes: [
       GoRoute(
         path: splashPath,
@@ -55,6 +61,10 @@ class AppRouter {
       GoRoute(
         path: forgotPasswordPath,
         builder: (context, state) => ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRouter.chatPath,
+        builder: (context, state) => ChatView(),
       ),
       GoRoute(
         path: attendancePath,
@@ -76,9 +86,15 @@ class AppRouter {
         path: assignmentPath,
         builder: (context, state) => const AssignmentView(),
       ),
-      GoRoute(path: reviewPath, builder: (context, state) => const ReviewView()),
+      GoRoute(
+        path: reviewPath,
+        builder: (context, state) => const ReviewView(),
+      ),
       GoRoute(path: quizPath, builder: (context, state) => const QuizView()),
       GoRoute(path: videoPath, builder: (context, state) => const VideoView()),
+      GoRoute(path: profilePath, builder: (context, state) => const ProfileView()),
+
+      //! #################################
       ShellRoute(
         builder: (context, state, child) {
           return MainScaffold(child: child);
@@ -96,6 +112,10 @@ class AppRouter {
           GoRoute(
             path: lectureDetailsPath,
             builder: (context, state) => LectureDetailsView(),
+          ),
+          GoRoute(
+            path: messageViewPath,
+            builder: (context, state) => MessageView(),
           ),
         ],
       ),

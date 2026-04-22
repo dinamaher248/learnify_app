@@ -25,7 +25,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         location.startsWith(AppRouter.lecturePath) ||
         location.startsWith(AppRouter.lectureDetailsPath))
       return 2;
-    if (location.startsWith('/message')) return 3;
+    if (location.startsWith(AppRouter.messageViewPath)) return 3;
     if (location.startsWith('/profile')) return 4;
 
     return 0;
@@ -43,7 +43,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         context.go(AppRouter.courseDetailsPath);
         break;
       case 3:
-        context.go('/message');
+        context.go(AppRouter.messageViewPath);
         break;
       case 4:
         context.go('/profile');
@@ -62,7 +62,9 @@ class _MainScaffoldState extends State<MainScaffold> {
       return AppBarWidget(title: "Lecture");
     } else if (location.startsWith(AppRouter.courseDetailsPath)) {
       return AppBarWidget(title: "Courses");
-    }
+    }else if (location.startsWith(AppRouter.messageViewPath)) {
+      return AppBarWidget(title: "Message");
+    } 
 
     return null;
   }

@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             _passwordController.text,
                                             _rememberMe,
                                           );
-                                          context.go(AppRouter.homePath);
+                                         // context.go(AppRouter.homePath);
                                         }
                                       },
                               ),
