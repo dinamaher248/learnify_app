@@ -17,7 +17,6 @@ import '../../features/home/presentation/view/main_scaffold.dart';
 import '../../features/lectures/presentation/view/lecture_details_view.dart';
 import '../../features/lectures/presentation/view/lecture_pdf_views.dart';
 import '../../features/quiz/presentation/view/review_view.dart';
-import '../../features/quiz/presentation/view/widgets/essay_quiz_view.dart';
 import '../../features/quiz/presentation/view/quiz_view.dart';
 import '../../features/quiz/presentation/view/result.dart';
 import '../../features/video/presentation/view/video_view.dart';
@@ -47,7 +46,7 @@ class AppRouter {
   static String profilePath = '/profile';
 
   static final GoRouter router = GoRouter(
-    initialLocation: messageViewPath,
+    initialLocation: loginPath,
     routes: [
       GoRoute(
         path: splashPath,

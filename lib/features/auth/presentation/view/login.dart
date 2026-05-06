@@ -10,6 +10,7 @@ import 'package:learnify_app/features/auth/presentation/view/forget_password.dar
 import 'package:sizer/sizer.dart';
 
 import '../../../../core/Api/dio_consumer.dart';
+import '../../../../core/Api/endpoints.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../../core/utils/assets.dart';
 import '../../../../core/utils/color.dart';
@@ -69,27 +70,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Login Success")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Text("Login Success"),
+            ),
+          );
+
+          context.go(AppRouter.homePath);
         }
 
         if (state is LoginFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
-        }
-
-        if (state is ActivateAccountSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Activated")));
-        }
-
-        if (state is ActivateAccountFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(backgroundColor: Colors.red, content: Text(state.message)),
+          );
         }
       },
       builder: (context, state) {
@@ -256,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           builder: (_) => BlocProvider(
                                             create: (_) => AuthCubit(
                                               AuthRepo(
-                                                api: DioConsumer(dio: Dio()),
+                                                api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl),
                                               ),
                                             ),
                                             child: ForgotPasswordScreen(),
@@ -298,7 +292,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                             _passwordController.text,
                                             _rememberMe,
                                           );
-                                         // context.go(AppRouter.homePath);
                                         }
                                       },
                               ),

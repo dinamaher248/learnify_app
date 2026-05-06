@@ -1,17 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../cache/cache_helper.dart';
+
 class ApiInterceptors extends Interceptor {
   @override
   void onRequest(
-      RequestOptions options, RequestInterceptorHandler handler) async {
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     if (options.data is FormData) {
       options.headers['Content-Type'] = 'multipart/form-data';
     } else {
       options.headers['Content-Type'] = 'application/json';
     }
+    //final token = CacheHelper.getData(key: 'token');
 
-    final prefs = await SharedPreferences.getInstance();
+   
+   final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     if (token != null) {

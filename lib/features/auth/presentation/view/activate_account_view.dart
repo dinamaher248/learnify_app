@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/Api/endpoints.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/app_styles.dart';
 import 'package:learnify_app/features/auth/presentation/view/main_login.dart';
@@ -22,7 +23,11 @@ class ActivateAccountView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AuthCubit(AuthRepo(api: DioConsumer(dio: Dio()))),
+      create: (_) => AuthCubit(
+        AuthRepo(
+          api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl),
+        ),
+      ),
       child: const _ActivateAccountBody(),
     );
   }

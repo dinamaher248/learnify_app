@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/features/auth/presentation/view_models/auth_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/cache/cache_helper.dart';
 import '../../../../core/errors/exceptions.dart';
@@ -22,11 +23,15 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       //! save token
-      await CacheHelper.saveData(key: "token", value: response["accessToken"]);
-      await CacheHelper.saveData(
-        key: "refreshToken",
-        value: response["refreshToken"],
-      );
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', response["data"]["accessToken"]);
+      await prefs.setString('refreshToken', response["data"]["refreshToken"]);
+      print(prefs);
+      // await CacheHelper.saveData(key: "token", value: response["accessToken"]);
+      // await CacheHelper.saveData(
+      //   key: "refreshToken",
+      //   value: response["refreshToken"],
+      // );
       if (!isClosed) {
         emit(LoginSuccess());
       }
@@ -88,9 +93,9 @@ class AuthCubit extends Cubit<AuthState> {
       //! 2. create student
       await repo.createStudentWithToken(
         token: adminToken,
-        email: "dinamaher248@gmail.com",
-        firstName: "Dina",
-        lastName: "Maher",
+        email: "molearnifytest@gmail.com",
+        firstName: "Learnify",
+        lastName: "Test1",
         gender: "female",
         departmentId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       );

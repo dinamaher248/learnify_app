@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import '../errors/exceptions.dart';
 import './api_consumer.dart';
-import './endpoints.dart';
 import './api_interceptors.dart';
 
 class DioConsumer extends ApiConsumer {
   final Dio dio;
 
-  DioConsumer({required this.dio}) {
-    dio.options.baseUrl = Endpoints.baseUrl;
+  DioConsumer({required this.dio, required String baseUrl}) {
+    dio.options.baseUrl = baseUrl;
+  
     dio.interceptors.add(ApiInterceptors());
     dio.interceptors.add(LogInterceptor(
       request: true,
@@ -52,6 +52,7 @@ class DioConsumer extends ApiConsumer {
         path,
         data: isFormData ? FormData.fromMap(data) : data,
         queryParameters: queryParameters,
+        options: options,
       );
       return response.data;
     } on DioException catch (e) {

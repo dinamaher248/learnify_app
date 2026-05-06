@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:sizer/sizer.dart';
 
-class CourseCard extends StatelessWidget {
+import '../assets.dart';
+
+class CourseCard extends StatefulWidget {
   final String imageUrl;
   final String title;
   final String instructorName;
@@ -18,6 +20,19 @@ class CourseCard extends StatelessWidget {
     required this.instructorAvatar,
     required this.progress,
   });
+
+  @override
+  State<CourseCard> createState() => _CourseCardState();
+}
+
+class _CourseCardState extends State<CourseCard> {
+  late final bool isNetwork;
+
+  @override
+  void initState() {
+    super.initState();
+    isNetwork = widget.imageUrl.startsWith('http');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +57,33 @@ class CourseCard extends StatelessWidget {
           // Course Image
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-              imageUrl,
-              height: 110,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: isNetwork
+                ? Image.network(
+                    widget.imageUrl,
+                    height: 110,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        AppAssets.courses_image,
+                        height: 110,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Image.asset(
+                    widget.imageUrl,
+                    height: 110,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(height: 12),
 
           // Title
           Text(
-            title,
+            widget.title,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -69,12 +99,14 @@ class CourseCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 14,
-                backgroundImage: NetworkImage(instructorAvatar),
+                backgroundImage: widget.instructorAvatar.startsWith('http')
+                    ? NetworkImage(widget.instructorAvatar)
+                    : AssetImage(widget.instructorAvatar) as ImageProvider,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  instructorName,
+                  widget.instructorName,
                   style: const TextStyle(
                     color: Color(0xFF1A1C3D),
                     fontSize: 14,
@@ -90,7 +122,7 @@ class CourseCard extends StatelessWidget {
             children: [
               Expanded(
                 child: LinearProgressIndicator(
-                  value: progress,
+                  value: widget.progress,
                   backgroundColor: const Color(0xFFE0E0E0),
                   color: const Color(0xFF5E5CE6),
                   minHeight: 8,
@@ -99,7 +131,7 @@ class CourseCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                "${(progress * 100).toInt()}%",
+                "${(widget.progress * 100).toInt()}%",
                 style: const TextStyle(
                   color: Color(0xFF5E5CE6),
                   fontWeight: FontWeight.bold,

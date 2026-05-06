@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/features/auth/presentation/view/login.dart';
 
 import '../../../../core/Api/dio_consumer.dart';
+import '../../../../core/Api/endpoints.dart';
 import '../../data/repo/auth_repo.dart';
 import '../view_models/auth_cubit.dart';
 
@@ -13,7 +14,7 @@ class MainLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthCubit(AuthRepo(api: DioConsumer(dio: Dio()))),
+      create: (context) => AuthCubit(AuthRepo(api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl))),
       child: LoginScreen(),
     );
   }

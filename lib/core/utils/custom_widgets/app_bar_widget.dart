@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../routing/app_router.dart';
 import '../app_styles.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget { // 1. أضف implements هنا
