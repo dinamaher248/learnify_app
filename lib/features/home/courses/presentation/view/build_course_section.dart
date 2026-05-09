@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/assets.dart';
 import 'package:learnify_app/features/home/presentation/view/widgets/row_show.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../../core/utils/custom_widgets/course_card.dart';
@@ -18,7 +19,17 @@ class BuildCourseSection extends StatelessWidget {
     return BlocBuilder<CourseCubit, CourseState>(
       builder: (context, state) {
         if (state is CourseLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: CourseCard(
+              title: "Loading...",
+              instructorName: "Loading...",
+              progress: 0,
+              imageUrl: AppAssets.courses_image,
+              instructorAvatar: AppAssets.profile,
+            ),
+          );
         }
 
         if (state is CourseFailure) {

@@ -70,12 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.green,
-              content: Text("Login Success"),
-            ),
-          );
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     backgroundColor: Colors.green,
+          //     content: Text("Login Success"),
+          //   ),
+          // );
 
           context.go(AppRouter.homePath);
         }
@@ -89,18 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
       builder: (context, state) {
         return BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
-            if (state is LoginSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  backgroundColor: Colors.green,
-                  content: Text("Login Success"),
-                ),
-              );
-
-              //! navigation
-              // Navigator.pushReplacement(...);
-            }
-
             if (state is LoginFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -250,7 +238,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           builder: (_) => BlocProvider(
                                             create: (_) => AuthCubit(
                                               AuthRepo(
-                                                api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl),
+                                                api: DioConsumer(
+                                                  dio: Dio(),
+                                                  baseUrl:
+                                                      Endpoints.baseAuthUrl,
+                                                ),
                                               ),
                                             ),
                                             child: ForgotPasswordScreen(),

@@ -145,7 +145,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             },
           ),
 
-          // 3. العناصر الثابتة (النقاط Indicator والزر الدائري)
           Column(
             children: [
               Expanded(flex: 55, child: const SizedBox()),
