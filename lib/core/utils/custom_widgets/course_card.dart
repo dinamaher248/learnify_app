@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../features/courses/presentation/view_models/course_cubit.dart';
 import '../assets.dart';
 
 class CourseCard extends StatefulWidget {
@@ -11,6 +13,7 @@ class CourseCard extends StatefulWidget {
   final String instructorName;
   final String instructorAvatar;
   final double progress;
+  final String id;
 
   const CourseCard({
     super.key,
@@ -19,6 +22,7 @@ class CourseCard extends StatefulWidget {
     required this.instructorName,
     required this.instructorAvatar,
     required this.progress,
+    required this.id,
   });
 
   @override
@@ -146,7 +150,7 @@ class _CourseCardState extends State<CourseCard> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                context.push(AppRouter.lecturePath);
+                context.push(AppRouter.lecturePath, extra: widget.id);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF5E5CE6),

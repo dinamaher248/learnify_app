@@ -5,7 +5,7 @@ import 'package:learnify_app/features/home/presentation/view/home_view.dart';
 import 'package:learnify_app/features/lectures/presentation/view/lecture_view.dart';
 import 'package:learnify_app/features/messages/presentation/view/chat_view.dart';
 import 'package:learnify_app/features/messages/presentation/view/message_view.dart';
-import 'package:learnify_app/features/messages/presentation/view/profile_view.dart';
+import 'package:learnify_app/features/profile_student/presentation/view/profile_view.dart';
 import 'package:learnify_app/features/notifications/presentation/view/widgets/notification_view.dart';
 import 'package:learnify_app/features/splash/presentation/view/splash_screen.dart';
 
@@ -75,7 +75,8 @@ class AppRouter {
       ),
       GoRoute(
         path: lecturePdfPath,
-        builder: (context, state) => LecturePdfView(),
+        builder: (context, state) =>
+            LecturePdfView(lectureId: state.extra as String),
       ),
       GoRoute(
         path: resultPath,
@@ -91,7 +92,10 @@ class AppRouter {
       ),
       GoRoute(path: quizPath, builder: (context, state) => const QuizView()),
       GoRoute(path: videoPath, builder: (context, state) => const VideoView()),
-      GoRoute(path: profilePath, builder: (context, state) => const ProfileView()),
+      GoRoute(
+        path: profilePath,
+        builder: (context, state) => const ProfileView(),
+      ),
 
       //! #################################
       ShellRoute(
@@ -105,12 +109,21 @@ class AppRouter {
             builder: (context, state) => CourseView(),
           ),
           GoRoute(
-            path: lecturePath,
-            builder: (context, state) => LectureView(),
+            path: AppRouter.lecturePath,
+            builder: (context, state) {
+              final courseId = state.extra as String;
+              return LectureView(courseId: courseId);
+            },
           ),
           GoRoute(
             path: lectureDetailsPath,
-            builder: (context, state) => LectureDetailsView(),
+            builder: (context, state) {
+              final data = state.extra as Map<String, dynamic>;
+              return LectureDetailsView(
+                courseId: data["courseId"],
+                lectureId: data["lectureId"],
+              );
+            },
           ),
           GoRoute(
             path: messageViewPath,

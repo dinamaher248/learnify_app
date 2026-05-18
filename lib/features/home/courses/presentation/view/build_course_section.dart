@@ -23,6 +23,7 @@ class BuildCourseSection extends StatelessWidget {
             baseColor: Colors.grey.shade300,
             highlightColor: Colors.grey.shade100,
             child: CourseCard(
+              id: "Loading...",
               title: "Loading...",
               instructorName: "Loading...",
               progress: 0,
@@ -62,6 +63,7 @@ class BuildCourseSection extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.only(right: index == 0 ? 2.w : 0),
                         child: CourseCard(
+                          id: course.id,
                           title: course.name,
                           instructorName: course.instructorName,
                           progress: course.completionPercentage / 100,

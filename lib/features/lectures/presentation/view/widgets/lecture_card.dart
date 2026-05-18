@@ -7,7 +7,7 @@ class LectureCard extends StatelessWidget {
   final String? time;
   final String imagePath;
   final VoidCallback onTap;
-  final bool isMessageCard ;
+  final bool isMessageCard;
 
   const LectureCard({
     super.key,
@@ -15,7 +15,7 @@ class LectureCard extends StatelessWidget {
     required this.subtitle,
     required this.imagePath,
     required this.onTap,
-    this.isMessageCard=false,
+    this.isMessageCard = false,
     this.time,
   });
 
@@ -26,14 +26,21 @@ class LectureCard extends StatelessWidget {
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Container(
+          child: SizedBox(
             width: 60,
             height: 90,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            child: Image.asset(imagePath, fit: BoxFit.cover),
+            child: imagePath.isNotEmpty
+                ? Image.network(imagePath, fit: BoxFit.cover)
+                : Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image_not_supported),
+                  ),
           ),
         ),
         title: Text(
@@ -44,13 +51,17 @@ class LectureCard extends StatelessWidget {
           subtitle,
           style: AppStyles.style16Medium.copyWith(color: Color(0xff24234D)),
         ),
-        trailing: isMessageCard? Text(
-          time ??" ",
-          style: AppStyles.style16Medium.copyWith(color: Color(0xff6B6868)),
-        ) : const Icon(
-          Icons.arrow_circle_right_outlined,
-          color: Colors.black,
-        ),
+        trailing: isMessageCard
+            ? Text(
+                time ?? " ",
+                style: AppStyles.style16Medium.copyWith(
+                  color: Color(0xff6B6868),
+                ),
+              )
+            : const Icon(
+                Icons.arrow_circle_right_outlined,
+                color: Colors.black,
+              ),
         onTap: onTap,
       ),
     );

@@ -46,7 +46,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         context.go(AppRouter.messageViewPath);
         break;
       case 4:
-        context.go('/profile');
+        context.go(AppRouter.profilePath);
         break;
     }
   }

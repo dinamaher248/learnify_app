@@ -49,6 +49,7 @@ class CourseViewBody extends StatelessWidget {
                 child: CourseCard(
                   title: "Loading...",
                   instructorName: "Loading...",
+                  id: "Loading...",
                   progress: 0,
                   imageUrl: AppAssets.courses_image,
                   instructorAvatar: AppAssets.profile,
@@ -81,6 +82,7 @@ class CourseViewBody extends StatelessWidget {
                 final course = state.courses[index];
 
                 return CourseCard(
+                  id: course.id,
                   title: course.name,
                   instructorName: course.instructorName,
                   progress: course.completionPercentage / 100,
