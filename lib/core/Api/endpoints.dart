@@ -12,10 +12,11 @@ class Endpoints {
   static String baseAcadimicUrl = "https://academic.learnefy.tech";
   static String baseAttendanceUrl = "https://attendance.learnefy.tech";
   static String attendanceCoursesUrl = "/api/v1/attendance/courses";
-  static String attendanceCourseLectures(String courseId) => "/api/v1/attendance/courses/$courseId/lectures";
+  static String attendanceCourseLectures(String courseId) =>
+      "/api/v1/attendance/courses/$courseId/lectures";
   static String scheduleUrl = "/api/v1/academic/schedule";
+  static String midtermScheduleUrl = "/api/v1/academic/schedule/midterm";
   static String courseUrl = "/api/v1/academic/courses";
-  
 }
 
 class ApiKey {

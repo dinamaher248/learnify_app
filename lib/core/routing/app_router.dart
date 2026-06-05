@@ -19,6 +19,7 @@ import '../../features/lectures/presentation/view/lecture_pdf_views.dart';
 import '../../features/quiz/presentation/view/review_view.dart';
 import '../../features/quiz/presentation/view/quiz_view.dart';
 import '../../features/quiz/presentation/view/result.dart';
+import '../../features/rashed_ai/presentation/view/rashed_ai_view.dart';
 import '../../features/video/presentation/view/video_view.dart';
 
 class AppRouter {
@@ -44,6 +45,7 @@ class AppRouter {
   static String videoPath = '/video';
   static String reviewPath = '/review';
   static String profilePath = '/profile';
+  static String rashedPath = '/rashed';
 
   static final GoRouter router = GoRouter(
     initialLocation: loginPath,
@@ -113,6 +115,12 @@ class AppRouter {
             builder: (context, state) {
               final courseId = state.extra as String;
               return LectureView(courseId: courseId);
+            },
+          ),
+          GoRoute(
+            path: AppRouter.rashedPath,
+            builder: (context, state) {
+              return RashedAiView();
             },
           ),
           GoRoute(

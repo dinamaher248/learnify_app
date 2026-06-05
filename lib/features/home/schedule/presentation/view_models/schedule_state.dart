@@ -6,10 +6,14 @@ class ScheduleInitial extends ScheduleState {}
 
 class ScheduleLoading extends ScheduleState {}
 
-class ScheduleSuccess extends ScheduleState {
+class ScheduleLoaded extends ScheduleState {
   final List<ScheduleModel> schedules;
+  final List<ScheduleModel> midterms;
 
-  ScheduleSuccess(this.schedules);
+  ScheduleLoaded({
+    required this.schedules,
+    required this.midterms,
+  });
 }
 
 class ScheduleFailure extends ScheduleState {
@@ -17,3 +21,5 @@ class ScheduleFailure extends ScheduleState {
 
   ScheduleFailure(this.message);
 }
+
+

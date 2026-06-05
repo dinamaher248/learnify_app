@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/color.dart';
 import 'package:learnify_app/features/profile_student/presentation/view/about_learnify_view.dart';
 import 'package:learnify_app/features/profile_student/presentation/view/activate_parent_view.dart';
@@ -23,7 +25,13 @@ class ProfileView extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go(AppRouter.homePath);
+            }
+          },
         ),
         title: const Text(
           'Profile',
@@ -58,7 +66,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // Study schedule
                   ProfileMenuItem(
                     icon: Icons.calendar_today_outlined,
@@ -73,7 +81,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // Grades
                   ProfileMenuItem(
                     icon: Icons.assessment_outlined,
@@ -90,9 +98,9 @@ class ProfileView extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // القسم الأوسط
             Container(
               color: Colors.white,
@@ -113,7 +121,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // About us
                   ProfileMenuItem(
                     icon: Icons.info_outline,
@@ -128,7 +136,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // Privacy Policy
                   ProfileMenuItem(
                     icon: Icons.lock_outline,
@@ -143,7 +151,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // Support
                   ProfileMenuItem(
                     icon: Icons.headset_mic_outlined,
@@ -158,7 +166,7 @@ class ProfileView extends StatelessWidget {
                     },
                   ),
                   const Divider(height: 1),
-                  
+
                   // Logout
                   ProfileMenuItem(
                     icon: Icons.logout,
@@ -172,9 +180,9 @@ class ProfileView extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Links Section
             const Text(
               'Links',
@@ -184,9 +192,9 @@ class ProfileView extends StatelessWidget {
                 color: Colors.grey,
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Social Media Icons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -211,9 +219,9 @@ class ProfileView extends StatelessWidget {
                     size: 28,
                   ),
                 ),
-                
+
                 const SizedBox(width: 24),
-                
+
                 // Facebook
                 Container(
                   width: 60,
@@ -234,9 +242,9 @@ class ProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(width: 24),
-                
+
                 // Custom Icon (Star)
                 Container(
                   width: 60,
@@ -245,15 +253,11 @@ class ProfileView extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: AppColors.primaryColor,
                   ),
-                  child: const Icon(
-                    Icons.star,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  child: const Icon(Icons.star, color: Colors.white, size: 28),
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 32),
           ],
         ),

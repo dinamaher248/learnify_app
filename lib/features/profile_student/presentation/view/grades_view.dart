@@ -1,41 +1,73 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/color.dart';
+
+import '../../../../core/Api/dio_consumer.dart';
+import '../../../../core/Api/endpoints.dart';
+import '../../data/repo/grades_repo.dart';
+import '../view_models/grades_cubit.dart';
+import '../view_models/grades_state.dart';
 
 class GradesView extends StatelessWidget {
   const GradesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Grades',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+    return BlocProvider<GradesCubit>(
+      create: (_) => GradesCubit(
+        GradesRepo(DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAcadimicUrl)),
+      )..getGrades(),
+      child: Scaffold(
+        backgroundColor: Colors.grey[50],
+        appBar: AppBar(
+          backgroundColor: AppColors.primaryColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => Navigator.pop(context),
           ),
+          title: const Text(
+            'Grades',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 5, // عدد المواد
-        itemBuilder: (context, index) {
-          return _buildGradeCard(
-            courseName: 'Information system',
-            instructorName: 'Ehab Gamel',
-            progress: 45,
-            courseImage: 'assets/images/lec${(index % 5) + 1}.png',
-          );
-        },
+        body: BlocBuilder<GradesCubit, GradesState>(
+          builder: (context, state) {
+            if (state is GradesLoading || state is GradesInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is GradesFailure) {
+              return Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Text('Failed to load grades: ${state.error}'),
+              );
+            }
+
+            final list = (state is GradesSuccess) ? state.grades : [];
+
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                final course = list[index];
+                return _buildGradeCard(
+                  courseName: course.name,
+                  instructorName: course.instructorName,
+                  progress: course.completionPercentage,
+                  courseImage: course.coverImageUrl ?? 'assets/images/lec1.png',
+                );
+              },
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+            );
+          },
+        ),
       ),
     );
   }
@@ -65,7 +97,7 @@ class GradesView extends StatelessWidget {
           // Course Image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
+            child: Image.network(
               courseImage,
               width: 60,
               height: 60,
@@ -78,18 +110,14 @@ class GradesView extends StatelessWidget {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.book,
-                    color: Colors.white,
-                    size: 30,
-                  ),
+                  child: const Icon(Icons.book, color: Colors.white, size: 30),
                 );
               },
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Course Info & Progress
           Expanded(
             child: Column(
@@ -104,9 +132,9 @@ class GradesView extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Instructor Info
                 Row(
                   children: [
@@ -124,17 +152,14 @@ class GradesView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         instructorName,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Progress Bar
                 Row(
                   children: [

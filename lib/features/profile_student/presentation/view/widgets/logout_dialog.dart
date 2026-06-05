@@ -1,7 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/Api/dio_consumer.dart';
+import 'package:learnify_app/core/Api/endpoints.dart';
 import 'package:learnify_app/core/cache/cache_helper.dart';
-import 'package:learnify_app/features/auth/presentation/view_models/auth_cubit.dart';
+import 'package:learnify_app/features/auth/data/repo/auth_repo.dart';
+
+import '../../../../../core/routing/app_router.dart';
 
 void showLogoutDialog(BuildContext context) {
   showDialog(
@@ -10,10 +15,7 @@ void showLogoutDialog(BuildContext context) {
       return Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(
-            color: Colors.red,
-            width: 2,
-          ),
+          side: const BorderSide(color: Colors.red, width: 2),
         ),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -27,15 +29,11 @@ void showLogoutDialog(BuildContext context) {
                   color: Colors.red.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.logout,
-                  color: Colors.red,
-                  size: 48,
-                ),
+                child: const Icon(Icons.logout, color: Colors.red, size: 48),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Title
               const Text(
                 'Logout Account',
@@ -45,22 +43,18 @@ void showLogoutDialog(BuildContext context) {
                   color: Colors.black87,
                 ),
               ),
-              
+
               const SizedBox(height: 12),
-              
+
               // Subtitle
               const Text(
                 'Are You Sure Want To Logout Your Account ?',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                  height: 1.5,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.5),
               ),
-              
+
               const SizedBox(height: 32),
-              
+
               // Buttons
               Row(
                 children: [
@@ -87,24 +81,39 @@ void showLogoutDialog(BuildContext context) {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 16),
-                  
+
                   // Logout Button
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Clear cache and logout
+                        // Try calling logout API with refresh token if available
+                        final refresh = CacheHelper.getData(
+                          key: 'refreshToken',
+                        );
+
+                        if (refresh != null) {
+                          try {
+                            final authRepo = AuthRepo(
+                              api: DioConsumer(
+                                dio: Dio(),
+                                baseUrl: Endpoints.baseAuthUrl,
+                              ),
+                            );
+                            await authRepo.logout(refreshToken: refresh);
+                          } catch (_) {
+                            // ignore API errors, still proceed to clear local data
+                          }
+                        }
+
+                        // Clear cache and logout locally
                         await CacheHelper.clearData();
-                        
+
                         // Navigate to login screen
                         if (context.mounted) {
                           Navigator.pop(dialogContext); // Close dialog
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            '/login',
-                            (route) => false,
-                          );
+                          context.go(AppRouter.loginPath);
                         }
                       },
                       style: ElevatedButton.styleFrom(

@@ -20,7 +20,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     final location = GoRouterState.of(context).uri.toString();
 
     if (location.startsWith(AppRouter.homePath)) return 0;
-    if (location.startsWith('/rashed')) return 1;
+    if (location.startsWith(AppRouter.rashedPath)) return 1;
     if (location.startsWith(AppRouter.courseDetailsPath) ||
         location.startsWith(AppRouter.lecturePath) ||
         location.startsWith(AppRouter.lectureDetailsPath))

@@ -8,14 +8,43 @@ class ScheduleCubit extends Cubit<ScheduleState> {
 
   ScheduleCubit(this.repo) : super(ScheduleInitial());
 
- Future<void> getSchedule() async {
+
+Future<void> loadAllSchedules() async {
   emit(ScheduleLoading());
 
   try {
-    final data = await repo.getSchedule(); 
-    emit(ScheduleSuccess(data));
+    final schedules = await repo.getSchedule();
+    final midterms = await repo.getMidterm();
+
+    emit(
+      ScheduleLoaded(
+        schedules: schedules,
+        midterms: midterms,
+      ),
+    );
   } catch (e) {
     emit(ScheduleFailure(e.toString()));
   }
 }
+  // Future<void> getSchedule() async {
+  //   if (!isClosed) emit(ScheduleLoading());
+
+  //   try {
+  //     final data = await repo.getSchedule();
+  //     if (!isClosed) emit(ScheduleSuccess(data));
+  //   } catch (e) {
+  //     if (!isClosed) emit(ScheduleFailure(e.toString()));
+  //   }
+  // }
+
+  // Future<void> getMidterm() async {
+  //   if (!isClosed) emit(ScheduleLoading());
+
+  //   try {
+  //     final data = await repo.getMidterm();
+  //     if (!isClosed) emit(ScheduleMidtermSuccess(data));
+  //   } catch (e) {
+  //     if (!isClosed) emit(ScheduleFailure(e.toString()));
+  //   }
+  // }
 }

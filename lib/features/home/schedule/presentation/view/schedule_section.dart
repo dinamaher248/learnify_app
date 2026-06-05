@@ -21,7 +21,7 @@ class ScheduleSection extends StatelessWidget {
         ScheduleRepo(
           DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAcadimicUrl),
         ),
-      )..getSchedule(),
+      )..loadAllSchedules(),
       child: ScheduleWidget(),
     );
   }
@@ -36,7 +36,7 @@ class ScheduleWidget extends StatelessWidget {
       builder: (context, state) {
         String imageUrl = AppAssets.schedule_image;
 
-        if (state is ScheduleSuccess && state.schedules.isNotEmpty) {
+        if (state is ScheduleLoaded && state.schedules.isNotEmpty) {
           imageUrl = state.schedules.first.imageUrl;
         }
         if (state is ScheduleLoading) {
