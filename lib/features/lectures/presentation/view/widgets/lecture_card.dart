@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../core/utils/app_styles.dart';
 
 class LectureCard extends StatelessWidget {
@@ -36,7 +37,9 @@ class LectureCard extends StatelessWidget {
             width: 60,
             height: 90,
             child: imagePath.isNotEmpty
-                ? Image.network(imagePath, fit: BoxFit.cover)
+                ? imagePath.startsWith('http')
+                      ? Image.network(imagePath, fit: BoxFit.cover)
+                      : Image.asset(imagePath, fit: BoxFit.cover)
                 : Container(
                     color: Colors.grey[300],
                     child: const Icon(Icons.image_not_supported),

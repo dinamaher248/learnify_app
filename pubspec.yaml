@@ -46,6 +46,12 @@ dependencies:
   http: ^1.6.0
   image_picker: ^1.0.7
   file_picker: ^10.3.3
+  video_player: ^2.6.1
+  chewie: ^1.4.2
+  open_filex: ^4.4.1
+  path_provider: ^2.1.5
+
+  
 
 dev_dependencies:
   flutter_test:

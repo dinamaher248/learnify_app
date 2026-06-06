@@ -10,6 +10,7 @@ class Endpoints {
   static String verifyOtpUrl = "/api/v1/auth/verify-otp";
   static String logoutUrl = "/api/v1/auth/logout";
   static String baseAcadimicUrl = "https://academic.learnefy.tech";
+  static String baseMessageUrl = "https://message.learnefy.tech";
   static String baseAttendanceUrl = "https://attendance.learnefy.tech";
   static String attendanceCoursesUrl = "/api/v1/attendance/courses";
   static String attendanceCourseLectures(String courseId) =>

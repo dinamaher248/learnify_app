@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:sizer/sizer.dart';
 
+import 'core/cache/cache_helper.dart';
 import 'core/utils/color.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await CacheHelper.init();
+
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => const MyApp(),
-    ),
+    DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
   );
 }
 

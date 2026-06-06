@@ -6,7 +6,7 @@ abstract class ApiConsumer {
     Object? data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-    Options? options
+    Options? options,
   });
 
   Future<dynamic> post(
@@ -14,14 +14,22 @@ abstract class ApiConsumer {
     Object? data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   });
   Future<dynamic> patch(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
+  });
+
+  Future<dynamic> put(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    bool isFormData = false,
+    Options? options,
   });
 
   Future<dynamic> delete(
@@ -29,6 +37,6 @@ abstract class ApiConsumer {
     Object? data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   });
 }

@@ -111,6 +111,8 @@ class _CourseCardState extends State<CourseCard> {
               Expanded(
                 child: Text(
                   widget.instructorName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: Color(0xFF1A1C3D),
                     fontSize: 14,

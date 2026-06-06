@@ -5,8 +5,8 @@ import 'package:learnify_app/features/home/presentation/view/home_view.dart';
 import 'package:learnify_app/features/lectures/presentation/view/lecture_view.dart';
 import 'package:learnify_app/features/messages/presentation/view/chat_view.dart';
 import 'package:learnify_app/features/messages/presentation/view/message_view.dart';
-import 'package:learnify_app/features/profile_student/presentation/view/profile_view.dart';
 import 'package:learnify_app/features/notifications/presentation/view/widgets/notification_view.dart';
+import 'package:learnify_app/features/profile_student/presentation/view/profile_view.dart';
 import 'package:learnify_app/features/splash/presentation/view/splash_screen.dart';
 
 import '../../features/assignment/presentation/view/assignment_view.dart';
@@ -16,9 +16,9 @@ import '../../features/auth/presentation/view/forget_password.dart';
 import '../../features/home/presentation/view/main_scaffold.dart';
 import '../../features/lectures/presentation/view/lecture_details_view.dart';
 import '../../features/lectures/presentation/view/lecture_pdf_views.dart';
-import '../../features/quiz/presentation/view/review_view.dart';
 import '../../features/quiz/presentation/view/quiz_view.dart';
 import '../../features/quiz/presentation/view/result.dart';
+import '../../features/quiz/presentation/view/review_view.dart';
 import '../../features/rashed_ai/presentation/view/rashed_ai_view.dart';
 import '../../features/video/presentation/view/video_view.dart';
 
@@ -42,7 +42,7 @@ class AppRouter {
   static String quizDetailsPath = '/quiz-details';
   static String chatPath = '/chatPath';
   static String messageViewPath = '/message_View';
-  static String videoPath = '/video';
+  static String videoPath = '/video/:lectureId';
   static String reviewPath = '/review';
   static String profilePath = '/profile';
   static String rashedPath = '/rashed';
@@ -63,10 +63,10 @@ class AppRouter {
         path: forgotPasswordPath,
         builder: (context, state) => ForgotPasswordScreen(),
       ),
-      GoRoute(
-        path: AppRouter.chatPath,
-        builder: (context, state) => ChatView(),
-      ),
+      // GoRoute(
+      //   path: AppRouter.chatPath,
+      //   builder: (context, state) => ChatView(),
+      // ),
       GoRoute(
         path: attendancePath,
         builder: (context, state) => AttendanceDialog(),
@@ -93,7 +93,18 @@ class AppRouter {
         builder: (context, state) => const ReviewView(),
       ),
       GoRoute(path: quizPath, builder: (context, state) => const QuizView()),
-      GoRoute(path: videoPath, builder: (context, state) => const VideoView()),
+      GoRoute(
+        path: videoPath,
+        builder: (context, state) {
+          final lectureId = state.pathParameters['lectureId']!;
+          String? lectureTitle;
+          if (state.extra != null && state.extra is Map<String, dynamic>) {
+            final map = state.extra as Map<String, dynamic>;
+            lectureTitle = map['lectureTitle'] as String?;
+          }
+          return VideoView(lectureId: lectureId, lectureTitle: lectureTitle);
+        },
+      ),
       GoRoute(
         path: profilePath,
         builder: (context, state) => const ProfileView(),
@@ -136,6 +147,18 @@ class AppRouter {
           GoRoute(
             path: messageViewPath,
             builder: (context, state) => MessageView(),
+          ),
+          // في الـ router ✅
+          GoRoute(
+            path: AppRouter.chatPath,
+            builder: (context, state) {
+              final extra =
+                  state.extra as Map<String, dynamic>?; // state مش context
+              return ChatView(
+                conversationId: extra?['conversationId'] ?? '',
+                otherUserId: extra?['otherUserId'] ?? '',
+              );
+            },
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import '../errors/exceptions.dart';
 import './api_consumer.dart';
 import './api_interceptors.dart';
@@ -8,16 +9,18 @@ class DioConsumer extends ApiConsumer {
 
   DioConsumer({required this.dio, required String baseUrl}) {
     dio.options.baseUrl = baseUrl;
-  
+
     dio.interceptors.add(ApiInterceptors());
-    dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-    ));
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
   }
   @override
   Future delete(
@@ -25,7 +28,7 @@ class DioConsumer extends ApiConsumer {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   }) async {
     try {
       final response = await dio.delete(
@@ -45,7 +48,7 @@ class DioConsumer extends ApiConsumer {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   }) async {
     try {
       final response = await dio.get(
@@ -66,9 +69,8 @@ class DioConsumer extends ApiConsumer {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   }) async {
-
     try {
       final response = await dio.patch(
         path,
@@ -82,12 +84,34 @@ class DioConsumer extends ApiConsumer {
   }
 
   @override
+  Future put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    bool isFormData = false,
+    Options? options,
+  }) async {
+    try {
+      final response = await dio.put(
+        path,
+        data: isFormData ? FormData.fromMap(data) : data,
+        queryParameters: queryParameters,
+        options: options,
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      handelDioException(e);
+    }
+  }
+
+  @override
   Future post(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     bool isFormData = false,
-     Options? options
+    Options? options,
   }) async {
     try {
       final response = await dio.post(

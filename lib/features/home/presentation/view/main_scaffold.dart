@@ -25,7 +25,9 @@ class _MainScaffoldState extends State<MainScaffold> {
         location.startsWith(AppRouter.lecturePath) ||
         location.startsWith(AppRouter.lectureDetailsPath))
       return 2;
-    if (location.startsWith(AppRouter.messageViewPath)) return 3;
+    if (location.startsWith(AppRouter.messageViewPath) ||
+        location.startsWith(AppRouter.chatPath))
+      return 3;
     if (location.startsWith('/profile')) return 4;
 
     return 0;
@@ -55,16 +57,22 @@ class _MainScaffoldState extends State<MainScaffold> {
     return GoRouterState.of(context).uri.toString();
   }
 
+  bool _isChatScreen(String location) {
+    return location.startsWith(AppRouter.chatPath);
+  }
+
   PreferredSizeWidget? _buildAppBar(String location) {
+    if (_isChatScreen(location)) return null;
+
     if (location.startsWith(AppRouter.lectureDetailsPath)) {
       return AppBarWidget(title: "Lecture Details");
     } else if (location.startsWith(AppRouter.lecturePath)) {
       return AppBarWidget(title: "Lecture");
     } else if (location.startsWith(AppRouter.courseDetailsPath)) {
       return AppBarWidget(title: "Courses");
-    }else if (location.startsWith(AppRouter.messageViewPath)) {
+    } else if (location.startsWith(AppRouter.messageViewPath)) {
       return AppBarWidget(title: "Message");
-    } 
+    }
 
     return null;
   }
@@ -73,21 +81,24 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     final currentIndex = getCurrentIndex(context);
     final location = getCurrentLocation(context);
-
+    final isChat = _isChatScreen(location);
     return Scaffold(
       backgroundColor: Color(0xffF2F2F2),
       appBar: _buildAppBar(location),
       body: widget.child,
-      floatingActionButton: CustomFAB(
-        currentIndex: currentIndex,
-        onTap: (index) => onTap(index, context),
-      ),
+      floatingActionButton: isChat
+          ? null
+          : CustomFAB(
+              currentIndex: currentIndex,
+              onTap: (index) => onTap(index, context),
+            ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: currentIndex,
-        onTap: (index) => onTap(index, context),
-      ),
+      bottomNavigationBar: isChat
+          ? null
+          : CustomBottomNavBar(
+              currentIndex: currentIndex,
+              onTap: (index) => onTap(index, context),
+            ),
     );
   }
-  
 }

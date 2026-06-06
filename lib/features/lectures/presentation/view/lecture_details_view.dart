@@ -1,13 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../../core/Api/dio_consumer.dart';
 import '../../../../core/Api/endpoints.dart';
 import '../../../../core/routing/app_router.dart';
 import '../../../attendance/presentation/view/attendance_view.dart';
 import '../../data/repo/lecture_details_repo.dart';
-import '../view_models/lec_pdf_cubit.dart';
 import 'widgets/detail_item.dart';
 import 'widgets/lecture_details_shimmer.dart';
 
@@ -72,7 +71,17 @@ class LectureDetailsView extends StatelessWidget {
               onChanged: (val) {},
               onTap: lecture.hasVideo
                   ? () {
-                      context.push(AppRouter.videoPath);
+                      // navigate and pass both id and title as extra
+                      context.push(
+                        AppRouter.videoPath.replaceFirst(
+                          ':lectureId',
+                          lecture.id,
+                        ),
+                        extra: {
+                          'lectureId': lecture.id,
+                          'lectureTitle': lecture.title,
+                        },
+                      );
                     }
                   : null,
             ),
