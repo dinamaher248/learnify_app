@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../../../core/utils/app_styles.dart';
+import '../../../../../../core/utils/app_styles.dart';
 
 class AssignmentUrlField extends StatelessWidget {
-  const AssignmentUrlField({super.key});
+  final TextEditingController? controller;
+  final VoidCallback? onSubmit;
+
+  const AssignmentUrlField({super.key, this.controller, this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,11 @@ class AssignmentUrlField extends StatelessWidget {
           width: 1,
         ),
       ),
-      child: TextField(
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
         decoration: InputDecoration(
           hintText: "Add Url Of Assignment",
           hintStyle:  AppStyles.style16Medium.copyWith(color: Color(0xff6B6868)),
@@ -37,6 +44,14 @@ class AssignmentUrlField extends StatelessWidget {
             borderSide: BorderSide(color: Colors.grey.shade300),
           ),
         ),
+      ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: onSubmit,
+            child: const Text('Submit'),
+          ),
+        ],
       ),
     );
   }

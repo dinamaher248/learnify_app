@@ -17,3 +17,13 @@ class AttendanceFailure extends AttendanceState {
 
   AttendanceFailure(this.message);
 }
+
+class AttendanceRegisterLoading extends AttendanceState {}
+
+class AttendanceRegisterSuccess extends AttendanceState {}
+
+class AttendanceRegisterFailure extends AttendanceState {
+  final String message;
+
+  AttendanceRegisterFailure(this.message);
+}

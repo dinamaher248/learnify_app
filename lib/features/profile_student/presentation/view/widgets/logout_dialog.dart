@@ -6,7 +6,7 @@ import 'package:learnify_app/core/Api/endpoints.dart';
 import 'package:learnify_app/core/cache/cache_helper.dart';
 import 'package:learnify_app/features/auth/data/repo/auth_repo.dart';
 
-import '../../../../../core/routing/app_router.dart';
+import '../../../../../../core/routing/app_router.dart';
 
 void showLogoutDialog(BuildContext context) {
   showDialog(

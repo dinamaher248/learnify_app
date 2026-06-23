@@ -50,6 +50,7 @@ dependencies:
   chewie: ^1.4.2
   open_filex: ^4.4.1
   path_provider: ^2.1.5
+  mobile_scanner: ^7.2.0
 
   
 

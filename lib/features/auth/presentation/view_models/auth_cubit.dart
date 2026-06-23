@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/features/auth/presentation/view_models/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../core/cache/cache_helper.dart';
-import '../../../../core/errors/exceptions.dart';
+import '../../../../../core/cache/cache_helper.dart';
+import '../../../../../core/errors/exceptions.dart';
 import '../../data/repo/auth_repo.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -23,15 +25,54 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       //! save token
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', response["data"]["accessToken"]);
-      await prefs.setString('refreshToken', response["data"]["refreshToken"]);
-      print(prefs);
-      // await CacheHelper.saveData(key: "token", value: response["accessToken"]);
-      // await CacheHelper.saveData(
-      //   key: "refreshToken",
-      //   value: response["refreshToken"],
-      // );
+      final accessToken = response["data"]["accessToken"];
+      await CacheHelper.saveData(key: "token", value: accessToken);
+      await CacheHelper.saveData(
+        key: "refreshToken",
+        value: response["data"]["refreshToken"],
+      );
+      
+      // Attempt to extract role from JWT token
+      String? role;
+      try {
+        final parts = accessToken.split('.');
+        if (parts.length == 3) {
+          final payloadString = parts[1];
+          // Add padding if necessary
+          final normalized = base64Url.normalize(payloadString);
+          final decodedPayload = utf8.decode(base64Url.decode(normalized));
+          final Map<String, dynamic> payloadMap = json.decode(decodedPayload);
+          
+          // Check standard role claims
+          role = payloadMap['role']?.toString() ?? 
+                 payloadMap['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']?.toString();
+        }
+      } catch (e) {
+        print("Failed to decode JWT for role: $e");
+      }
+
+      // Fallback to response body if JWT didn't contain it
+      if (role == null) {
+        if (response["data"]["roles"] != null &&
+            response["data"]["roles"] is List &&
+            (response["data"]["roles"] as List).isNotEmpty) {
+          role = response["data"]["roles"][0].toString();
+        } else if (response["roles"] != null &&
+            response["roles"] is List &&
+            (response["roles"] as List).isNotEmpty) {
+          role = response["roles"][0].toString();
+        } else {
+          role = response["data"]["role"]?.toString() ??
+              response["role"]?.toString();
+        }
+      }
+
+      if (role != null) {
+        await CacheHelper.saveData(key: 'role', value: role);
+      } else {
+        await CacheHelper.removeData(key: 'role');
+      }
+
       if (!isClosed) {
         emit(LoginSuccess());
       }
@@ -70,6 +111,7 @@ class AuthCubit extends Cubit<AuthState> {
       // Clear tokens from cache
       await CacheHelper.removeData(key: "token");
       await CacheHelper.removeData(key: "refreshToken");
+      await CacheHelper.removeData(key: "role");
       emit(LogoutSuccess());
     } on ServerException catch (e) {
       emit(LogoutFailure(e.errorModel.errorMessage));
@@ -111,10 +153,52 @@ class AuthCubit extends Cubit<AuthState> {
     emit(ActivateAccountLoading());
 
     try {
-      await repo.activateAccount(
+      final resp = await repo.activateAccount(
         code: code.toString(),
         password: password.toString(),
       );
+
+      String? role = resp['data']?['role']?.toString();
+      if (role == null && resp['data']?['roles'] != null && resp['data']['roles'] is List && (resp['data']['roles'] as List).isNotEmpty) {
+        role = resp['data']['roles'][0].toString();
+      }
+      if (role != null) await CacheHelper.saveData(key: 'role', value: role);
+
+      emit(ActivateAccountSuccess());
+    } on ServerException catch (e) {
+      emit(ActivateAccountFailure(e.errorModel.errorMessage));
+    }
+  }
+
+  /// Activate Parent account
+  Future<void> activateParent({
+    required String code,
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) async {
+    emit(ActivateAccountLoading());
+
+    try {
+      final resp = await repo.activateParent(
+        code: code,
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      // save tokens
+      final access = resp['data']['accessToken'];
+      final refresh = resp['data']['refreshToken'];
+      await CacheHelper.saveData(key: 'token', value: access);
+      await CacheHelper.saveData(key: 'refreshToken', value: refresh);
+      String? role = resp['data']?['role']?.toString();
+      if (role == null && resp['data']?['roles'] != null && resp['data']['roles'] is List && (resp['data']['roles'] as List).isNotEmpty) {
+        role = resp['data']['roles'][0].toString();
+      }
+      if (role != null) await CacheHelper.saveData(key: 'role', value: role);
 
       emit(ActivateAccountSuccess());
     } on ServerException catch (e) {
@@ -175,6 +259,20 @@ class AuthCubit extends Cubit<AuthState> {
       emit(ResetPasswordWithTokenSuccess());
     } on ServerException catch (e) {
       emit(ResetPasswordWithTokenFailure(e.errorModel.errorMessage));
+    }
+  }
+
+  Future<void> generateParentCode() async {
+    emit(GenerateParentCodeLoading());
+
+    try {
+      final parentCode = await repo.generateParentCode();
+
+      emit(GenerateParentCodeSuccess(parentCode));
+    } on ServerException catch (e) {
+      emit(GenerateParentCodeFailure(e.errorModel.errorMessage));
+    } catch (e) {
+      emit(GenerateParentCodeFailure(e.toString()));
     }
   }
 }

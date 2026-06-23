@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
 
-import '../../../../core/Api/api_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/api_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
+import '../../../profile_student/data/models/parent_code_model.dart';
 
 class AuthRepo {
   final ApiConsumer api;
@@ -25,14 +26,16 @@ class AuthRepo {
     return response;
   }
 
-  Future<void> activateAccount({
+  Future<Map<String, dynamic>> activateAccount({
     required String code,
     required String password,
   }) async {
-    await api.post(
+    final response = await api.post(
       Endpoints.activateUrl,
       data: {"code": code, "password": password},
     );
+
+    return response as Map<String, dynamic>;
   }
 
   Future<void> createStudentWithToken({
@@ -107,5 +110,35 @@ class AuthRepo {
         "newPassword": newPassword,
       },
     );
+  }
+
+  Future<ParentCodeModel> generateParentCode() async {
+    final response = await api.post(
+      '/api/v1/auth/parent/generate-code',
+      data: {},
+    );
+
+    return ParentCodeModel.fromJson(response);
+  }
+
+  Future<Map<String, dynamic>> activateParent({
+    required String code,
+    required String email,
+    required String password,
+    required String firstName,
+    required String lastName,
+  }) async {
+    final response = await api.post(
+      '/api/v1/auth/parent/activate',
+      data: {
+        'code': code,
+        'email': email,
+        'password': password,
+        'firstName': firstName,
+        'lastName': lastName,
+      },
+    );
+
+    return response as Map<String, dynamic>;
   }
 }

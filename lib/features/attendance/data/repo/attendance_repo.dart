@@ -9,4 +9,8 @@ class AttendanceRepo {
   Future<List<CourseAttendanceModel>> getCoursesAttendance() async {
     return await remoteDataSource.getStudentAttendanceCourses();
   }
+
+  Future<void> registerAttendance(String lectureId, String code) async {
+    return await remoteDataSource.registerAttendance(lectureId, code);
+  }
 }

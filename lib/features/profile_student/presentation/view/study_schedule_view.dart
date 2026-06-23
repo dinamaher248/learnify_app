@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/color.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../../../home/schedule/data/repo/schedule_repo.dart';
 import '../../../home/schedule/presentation/view/schedule_section.dart';
 import '../../../home/schedule/presentation/view_models/schedule_cubit.dart';

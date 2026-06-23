@@ -1,3 +1,5 @@
+import '../../../profile_student/data/models/parent_code_model.dart';
+
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
@@ -61,4 +63,20 @@ class ResetPasswordWithTokenSuccess extends AuthState {}
 class ResetPasswordWithTokenFailure extends AuthState {
   final String message;
   ResetPasswordWithTokenFailure(this.message);
+}
+
+
+
+class GenerateParentCodeLoading extends AuthState {}
+
+class GenerateParentCodeSuccess extends AuthState {
+  final ParentCodeModel model;
+
+  GenerateParentCodeSuccess(this.model);
+}
+
+class GenerateParentCodeFailure extends AuthState {
+  final String message;
+
+  GenerateParentCodeFailure(this.message);
 }

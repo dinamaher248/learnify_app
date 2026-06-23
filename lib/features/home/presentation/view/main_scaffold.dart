@@ -72,6 +72,8 @@ class _MainScaffoldState extends State<MainScaffold> {
       return AppBarWidget(title: "Courses");
     } else if (location.startsWith(AppRouter.messageViewPath)) {
       return AppBarWidget(title: "Message");
+    } else if (location.startsWith(AppRouter.attendancePath)) {
+      return AppBarWidget(title: "Attendance");
     }
 
     return null;

@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/color.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../../data/repo/student_profile_repo.dart';
 import '../view_models/profile_student_cubit.dart';
 import '../view_models/profile_student_state.dart';
+import 'edit_profile_view.dart';
 
 class DetailsStudentView extends StatelessWidget {
   const DetailsStudentView({super.key});
@@ -151,6 +152,45 @@ class DetailsStudentView extends StatelessWidget {
                           ],
                         ),
                       ),
+
+                      const SizedBox(height: 32),
+
+                      if (profile != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider.value(
+                                      value: context.read<ProfileCubit>(),
+                                      child: EditProfileView(profile: profile),
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.edit, color: Colors.white),
+                              label: const Text(
+                                'Edit Profile',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
 
                       const SizedBox(height: 32),
                     ],

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/color.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../../data/repo/grades_repo.dart';
 import '../view_models/grades_cubit.dart';
 import '../view_models/grades_state.dart';

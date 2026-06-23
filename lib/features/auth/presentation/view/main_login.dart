@@ -9,14 +9,17 @@ import '../../data/repo/auth_repo.dart';
 import '../view_models/auth_cubit.dart';
 
 class MainLogin extends StatelessWidget {
-  const MainLogin({super.key});
+  MainLogin({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthCubit(AuthRepo(api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl))),
+      create: (context) => AuthCubit(
+        AuthRepo(
+          api: DioConsumer(dio: Dio(), baseUrl: Endpoints.baseAuthUrl),
+        ),
+      ),
       child: LoginScreen(),
     );
   }
 }
-

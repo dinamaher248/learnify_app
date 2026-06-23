@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart' show FormData, MultipartFile, Options;
 
-import '../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/dio_consumer.dart';
 import '../models/conversation_model.dart';
 
 class MessagesRepo {

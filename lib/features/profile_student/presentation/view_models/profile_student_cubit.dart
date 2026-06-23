@@ -23,4 +23,28 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileFailure(e.toString()));
     }
   }
+
+  Future<void> updateProfile({
+    String? fullName,
+    String? phoneNumber,
+    String? imagePath,
+  }) async {
+    if (!isClosed) emit(ProfileUpdateLoading());
+
+    try {
+      await repo.updateStudentProfile(
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        imagePath: imagePath,
+      );
+
+      if (isClosed) return;
+      emit(ProfileUpdateSuccess());
+      // Re-fetch profile to get updated data
+      await getProfile();
+    } catch (e) {
+      if (isClosed) return;
+      emit(ProfileUpdateFailure(e.toString()));
+    }
+  }
 }

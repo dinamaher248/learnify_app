@@ -1,4 +1,4 @@
-import '../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/dio_consumer.dart';
 import '../models/lecture_video_model.dart';
 
 class LectureVideoRepo {

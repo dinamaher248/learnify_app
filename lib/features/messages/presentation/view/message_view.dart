@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../../../lectures/presentation/view/widgets/lecture_card.dart';
 import '../../data/repo/messages_repo.dart';
 import '../view_models/conversations_cubit.dart';

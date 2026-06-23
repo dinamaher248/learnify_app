@@ -1,5 +1,5 @@
-import '../../../../../core/Api/api_consumer.dart';
-import '../../../../../core/Api/endpoints.dart';
+import '../../../../../../core/Api/api_consumer.dart';
+import '../../../../../../core/Api/endpoints.dart';
 import '../models/lecture_attendance_model.dart';
 
 class AttendanceLecturesRemoteDataSource {

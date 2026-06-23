@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/utils/app_styles.dart';
 import 'package:learnify_app/features/auth/presentation/view/activate_account_view.dart';
 import 'package:learnify_app/features/home/presentation/view/main_scaffold.dart';
+import 'package:learnify_app/features/parent/auth/presentation/view/active_parent_code_view.dart';
 import 'package:learnify_app/shared/widgets/custom_widgets.dart';
 import 'package:learnify_app/features/auth/presentation/view/forget_password.dart';
 import 'package:sizer/sizer.dart';
@@ -328,7 +329,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const ActivateAccountView(),
+                                            ActivateAccountView(
+                                              isParentApp: false,
+                                            ),
                                       ),
                                     );
                                   },
@@ -342,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   ),
                                   child: const Text(
-                                    "Activate account",
+                                    "Activate account as user",
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -351,7 +354,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 30),
+                              const SizedBox(height: 5),
+                              SizedBox(
+                                width: double.infinity,
+                                height: 55,
+                                child: OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ActivateParentAccountView(
+                                              isParentApp: true,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(
+                                      color: AppColors.primaryColor,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Activate account as parent",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),

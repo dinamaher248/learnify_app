@@ -1,5 +1,5 @@
-import '../../../../core/Api/api_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/api_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../models/course_attendance_model.dart';
 
 class AttendanceRemoteDataSource {
@@ -21,5 +21,14 @@ class AttendanceRemoteDataSource {
     }
 
     throw Exception('Unexpected attendance API response format');
+  }
+
+  Future<void> registerAttendance(String lectureId, String code) async {
+    await api.post(
+      '/api/v1/attendance/lectures/$lectureId/register',
+      data: {
+        "code": code
+      },
+    );
   }
 }

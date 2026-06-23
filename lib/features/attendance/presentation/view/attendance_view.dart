@@ -2,22 +2,26 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/app_styles.dart';
+import 'package:learnify_app/features/assignment/presentation/view/widgets/or_divider.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
+import '../../../../core/utils/custom_widgets/app_bar_widget.dart';
 import '../../data/remote/attendance_remote_data_source.dart';
 import '../../data/repo/attendance_repo.dart';
 import '../view_models/attendance_cubit.dart';
 import '../view_models/attendance_state.dart';
+import 'widgets/qr_scanner_view.dart' as learnify_qr;
 
-class AttendanceDialog extends StatefulWidget {
-  const AttendanceDialog({super.key});
+class AttendanceView extends StatefulWidget {
+  final String lectureId;
+  const AttendanceView({super.key, required this.lectureId});
 
   @override
-  State<AttendanceDialog> createState() => _AttendanceDialogState();
+  State<AttendanceView> createState() => _AttendanceViewState();
 }
 
-class _AttendanceDialogState extends State<AttendanceDialog> {
+class _AttendanceViewState extends State<AttendanceView> {
   late final AttendanceCubit _attendanceCubit;
   bool _isInitialized = false;
 
@@ -43,7 +47,20 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _attendanceCubit,
-      child: BlocBuilder<AttendanceCubit, AttendanceState>(
+      child: BlocConsumer<AttendanceCubit, AttendanceState>(
+        listener: (context, state) {
+          if (state is AttendanceRegisterSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Attendance registered successfully!'),
+              ),
+            );
+          } else if (state is AttendanceRegisterFailure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+          }
+        },
         builder: (context, state) {
           if (!_isInitialized) {
             _isInitialized = true;
@@ -52,44 +69,87 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
             });
           }
 
-          return Dialog(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 30),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: Image.network(
-                        'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Example',
-                        height: 150,
+          return Scaffold(
+            appBar: AppBarWidget(title: "Attendance"),
+            body: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      final scannedCode = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const learnify_qr.QRScannerView(),
+                        ),
+                      );
+                      if (scannedCode != null && context.mounted) {
+                        context.read<AttendanceCubit>().registerAttendance(
+                          widget.lectureId,
+                          scannedCode.toString(),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0,
+                        vertical: 20.0,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          // color: Color.fromARGB(255, 180, 198, 221),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                          vertical: 20.0,
+                        ),
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              "QR code Capture",
+                              style: AppStyles.style20SemiBold.copyWith(
+                                color: Colors.black,
+                              ),
+                            ),
+                            Spacer(),
+
+                            const Icon(
+                              Icons.camera_alt,
+                              size: 30,
+                              color: Color(0xff6B6868),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "Code: ",
-                            style: AppStyles.style24SemiBold.copyWith(
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "19700",
-                            style: AppStyles.style24SemiBold.copyWith(
-                              color: const Color(0xFF5047E4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextField(
+                  ),
+                  if (state is AttendanceRegisterSuccess) ...[
+                    const Text("Attendance registered successfully!"),
+                  ] else if (state is AttendanceRegisterFailure) ...[
+                    Text(state.message),
+                  ] else if (state is AttendanceRegisterLoading) ...[
+                    const CircularProgressIndicator(),
+                  ],
+
+                  // const SizedBox(height: 24),
+
+                  // OrDivider(),
+                  const SizedBox(height: 24),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: TextField(
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          context.read<AttendanceCubit>().registerAttendance(
+                            widget.lectureId,
+                            value,
+                          );
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: "Enter Your Code",
                         hintStyle: AppStyles.style16Medium.copyWith(
@@ -107,10 +167,15 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    _buildAttendanceSection(state),
-                  ],
-                ),
+                  ),
+                  // if (state is AttendanceRegisterLoading)
+                  //   const Padding(
+                  //     padding: EdgeInsets.only(top: 16.0),
+                  //     child: Center(child: CircularProgressIndicator()),
+                  //   ),
+                  // const SizedBox(height: 24),
+                  // _buildAttendanceSection(state),
+                ],
               ),
             ),
           );
@@ -174,7 +239,9 @@ class _AttendanceDialogState extends State<AttendanceDialog> {
                       children: [
                         Text(
                           'Course: ${item.courseId}',
-                          style: AppStyles.style16Medium.copyWith(color: Colors.black),
+                          style: AppStyles.style16Medium.copyWith(
+                            color: Colors.black,
+                          ),
                         ),
                         const SizedBox(height: 4),
                         Text(

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:learnify_app/core/utils/color.dart';
+
+import '../../../auth/presentation/view_models/auth_cubit.dart';
+import '../../../auth/presentation/view_models/auth_state.dart';
 
 class ActivateParentView extends StatefulWidget {
   const ActivateParentView({super.key});
@@ -13,32 +17,39 @@ class _ActivateParentViewState extends State<ActivateParentView> {
   String? generatedCode;
   bool isLoading = false;
 
-  void _generateCode() {
-    setState(() {
-      isLoading = true;
-    });
+  Future<void> _generateCode() async {
+  setState(() {
+    isLoading = true;
+  });
 
-    // Simulate API call
-    Future.delayed(const Duration(seconds: 1), () {
+  try {
+    final cubit = context.read<AuthCubit>();
+
+    await cubit.generateParentCode();
+  } finally {
+    if (mounted) {
       setState(() {
-        generatedCode = 'ABC123XYZ';
         isLoading = false;
       });
-    });
-  }
-
-  void _copyToClipboard() {
-    if (generatedCode != null) {
-      Clipboard.setData(ClipboardData(text: generatedCode!));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code copied to clipboard!'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
     }
   }
+}
+ void _copyToClipboard() {
+  if (generatedCode == null) return;
+
+  Clipboard.setData(
+    ClipboardData(
+      text: generatedCode!,
+    ),
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Code copied to clipboard!'),
+      backgroundColor: Colors.green,
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +72,24 @@ class _ActivateParentViewState extends State<ActivateParentView> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
+     body: BlocListener<AuthCubit, AuthState>(
+  listener: (context, state) {
+    if (state is GenerateParentCodeSuccess) {
+      setState(() {
+        generatedCode = state.model.code;
+      });
+    }
+
+    if (state is GenerateParentCodeFailure) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  },
+  child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -212,6 +240,6 @@ class _ActivateParentViewState extends State<ActivateParentView> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

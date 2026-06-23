@@ -4,9 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
 import '../../data/models/message_model.dart';
 import '../../data/repo/messages_repo.dart';
 import '../view_models/chat_cubit.dart';
@@ -17,7 +18,7 @@ import 'widgets/message_input_area.dart';
 class ChatView extends StatelessWidget {
   final String conversationId;
   final String otherUserId;
- 
+
   const ChatView({
     super.key,
     required this.conversationId,
@@ -28,10 +29,12 @@ class ChatView extends StatelessWidget {
   Widget build(BuildContext context) {
     // ── نقرأ conversationId و otherUserId من الـ router extra ──
     final extra = GoRouterState.of(context).extra;
-    final String conversationId =
-        (extra is Map<String, dynamic>) ? (extra['conversationId'] ?? '') : '';
-    final String otherUserId =
-        (extra is Map<String, dynamic>) ? (extra['otherUserId'] ?? '') : '';
+    final String conversationId = (extra is Map<String, dynamic>)
+        ? (extra['conversationId'] ?? '')
+        : '';
+    final String otherUserId = (extra is Map<String, dynamic>)
+        ? (extra['otherUserId'] ?? '')
+        : '';
 
     return BlocProvider(
       create: (_) => ChatCubit(
@@ -104,19 +107,23 @@ class _ChatBodyState extends State<_ChatBody> {
     }
   }
 
-   Future<void> _handleFilePicked(String path) async {
+  Future<void> _handleFilePicked(String path) async {
     try {
       await context.read<ChatCubit>().sendFile(path, isCamera: false);
       _scrollToBottom();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send file: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Failed to send file: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
   }
-   // ✅ إرسال صورة من الكاميرا
+
+  // ✅ إرسال صورة من الكاميرا
   Future<void> _handleImagePicked(String path) async {
     try {
       await context.read<ChatCubit>().sendFile(path, isCamera: true);
@@ -124,12 +131,14 @@ class _ChatBodyState extends State<_ChatBody> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to send image: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Failed to send image: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
   }
- 
 
   @override
   Widget build(BuildContext context) {
@@ -195,8 +204,7 @@ class _ChatBodyState extends State<_ChatBody> {
                 }
 
                 return RefreshIndicator(
-                  onRefresh: () =>
-                      context.read<ChatCubit>().refreshMessages(),
+                  onRefresh: () => context.read<ChatCubit>().refreshMessages(),
                   child: ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -237,12 +245,12 @@ class _ChatBodyState extends State<_ChatBody> {
           ),
 
           // ── حقل الكتابة ──
-           MessageInputArea(
+          MessageInputArea(
             controller: _controller,
             onSend: (_) => _handleSend(),
             onFilePicked: _handleFilePicked,
             onImagePicked: _handleImagePicked,
-          ),  
+          ),
 
           const SizedBox(height: 8),
         ],
@@ -264,20 +272,94 @@ class _FileBubble extends StatefulWidget {
 
 class _FileBubbleState extends State<_FileBubble> {
   bool _isDownloading = false;
- Future<void> _openFile() async {
-    final fileUrl = widget.msg.fileUrl;
-    if (fileUrl == null) return;
+  String _resolveFileUrl(String url) {
+    if (url.startsWith('http') || url.startsWith('https')) return url;
+    final base = Endpoints.baseMessageUrl;
+    if (url.startsWith('/')) return '$base$url';
+    return '$base/$url';
+  }
 
+  Future<void> _openFile() async {
+    final rawUrl = widget.msg.fileUrl;
+    if (rawUrl == null) return;
     setState(() => _isDownloading = true);
 
     try {
       // نحمل الملف في الـ temp directory
-      final dio = Dio();
+      // نستخدم DioConsumer عشان يضيف الـ interceptors (auth, logging)
+      final consumer = DioConsumer(
+        dio: Dio(),
+        baseUrl: Endpoints.baseMessageUrl,
+      );
+      final dio = consumer.dio;
       final tempDir = await _getTempDir();
-      final fileName = fileUrl.split('/').last;
+      final fileName = rawUrl.split('/').last;
       final savePath = '$tempDir/$fileName';
 
-      await dio.download(fileUrl, savePath);
+      // نجهز قائمة محاولات: لو الـ rawUrl كامل استخدمه، وإلا جرب baseMessage ثم baseAcadimic
+      final candidates = <String>[];
+      if (rawUrl.startsWith('http')) {
+        candidates.add(rawUrl);
+      } else {
+        try {
+          candidates.add(
+            Uri.parse(Endpoints.baseMessageUrl).resolve(rawUrl).toString(),
+          );
+        } catch (_) {}
+        try {
+          candidates.add(
+            Uri.parse(Endpoints.baseAcadimicUrl).resolve(rawUrl).toString(),
+          );
+        } catch (_) {}
+        // try encoded path
+        try {
+          final enc = Uri.parse(
+            Endpoints.baseMessageUrl,
+          ).resolve(Uri.encodeFull(rawUrl)).toString();
+          if (!candidates.contains(enc)) candidates.add(enc);
+        } catch (_) {}
+      }
+
+      bool downloaded = false;
+      DioException? lastDioEx;
+      for (final candidate in candidates) {
+        try {
+          await dio.download(candidate, savePath);
+          downloaded = true;
+          break;
+        } on DioException catch (e) {
+          lastDioEx = e;
+          final status = e.response?.statusCode;
+          // لو 404 نجرب المرشح التالي، وإلا نرمي الاستثناء
+          if (status == 404) continue;
+          rethrow;
+        }
+      }
+
+      if (!downloaded) {
+        final tried = candidates.isNotEmpty
+            ? candidates.first
+            : _resolveFileUrl(rawUrl);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to download file (404). Tried: $tried'),
+              action: SnackBarAction(
+                label: 'Open',
+                onPressed: () async {
+                  final uri = Uri.tryParse(tried);
+                  if (uri != null && await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (lastDioEx != null) throw lastDioEx;
+        throw Exception('Failed to download file');
+      }
 
       // نفتح الملف بأي تطبيق مناسب على الجهاز
       final result = await OpenFilex.open(savePath);
@@ -285,7 +367,9 @@ class _FileBubbleState extends State<_FileBubble> {
       if (result.type != ResultType.done && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('No application found to open this type: ${result.message}'),
+            content: Text(
+              'No application found to open this type: ${result.message}',
+            ),
             backgroundColor: Colors.orange,
           ),
         );
@@ -293,7 +377,10 @@ class _FileBubbleState extends State<_FileBubble> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to open file: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Failed to open file: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
@@ -301,7 +388,7 @@ class _FileBubbleState extends State<_FileBubble> {
     }
   }
 
- Future<String> _getTempDir() async {
+  Future<String> _getTempDir() async {
     try {
       final dir = await _getTemporaryDirectory();
       return dir;
@@ -329,7 +416,9 @@ class _FileBubbleState extends State<_FileBubble> {
         widget.msg.fileType == 'Image' || widget.msg.fileType == 'Camera';
 
     return Align(
-      alignment: widget.msg.isMine ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: widget.msg.isMine
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: GestureDetector(
         onTap: _isDownloading ? null : _openFile,
         child: Container(
@@ -351,10 +440,10 @@ class _FileBubbleState extends State<_FileBubble> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isImage && widget.msg.fileUrl != null)
-                 ClipRRect(
+                ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
-                   widget.msg.fileUrl!,
+                    _resolveFileUrl(widget.msg.fileUrl!),
                     width: 200,
                     fit: BoxFit.cover,
                     loadingBuilder: (_, child, progress) {
@@ -362,22 +451,30 @@ class _FileBubbleState extends State<_FileBubble> {
                       return const SizedBox(
                         width: 200,
                         height: 150,
-                        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+                        child: Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        ),
                       );
                     },
-                    errorBuilder: (_, __, ___) =>
-                        const Icon(Icons.broken_image, color: Colors.white, size: 40),
+                    errorBuilder: (_, _, _) => const Icon(
+                      Icons.broken_image,
+                      color: Colors.white,
+                      size: 40,
+                    ),
                   ),
-                 )
+                )
               else
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                     if (_isDownloading)
+                    if (_isDownloading)
                       const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
                     else
                       Icon(
@@ -389,14 +486,15 @@ class _FileBubbleState extends State<_FileBubble> {
                       _isDownloading
                           ? 'loading...'
                           : isPdf
-                              ? 'PDF file'
-                              : 'Attached file',
+                          ? 'PDF file'
+                          : 'Attached file',
                       style: const TextStyle(color: Colors.white),
                     ),
                   ],
                 ),
 
-              if (widget.msg.content != null && widget.msg.content!.isNotEmpty) ...[
+              if (widget.msg.content != null &&
+                  widget.msg.content!.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
                   widget.msg.content!,

@@ -1,7 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:learnify_app/core/Api/dio_consumer.dart';
+import 'package:learnify_app/core/Api/endpoints.dart';
 import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/color.dart';
+import 'package:learnify_app/features/auth/data/repo/auth_repo.dart';
+import 'package:learnify_app/features/auth/presentation/view_models/auth_cubit.dart';
 import 'package:learnify_app/features/profile_student/presentation/view/about_learnify_view.dart';
 import 'package:learnify_app/features/profile_student/presentation/view/activate_parent_view.dart';
 import 'package:learnify_app/features/profile_student/presentation/view/details_student_view.dart';
@@ -115,7 +121,17 @@ class ProfileView extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ActivateParentView(),
+                          builder: (context) => BlocProvider(
+                            create: (_) => AuthCubit(
+                              AuthRepo(
+                                api: DioConsumer(
+                                  dio: Dio(),
+                                  baseUrl: Endpoints.baseAuthUrl,
+                                ),
+                              ),
+                            ),
+                            child: const ActivateParentView(),
+                          ),
                         ),
                       );
                     },

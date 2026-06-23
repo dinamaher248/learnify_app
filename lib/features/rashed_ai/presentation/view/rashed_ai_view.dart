@@ -1,9 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:learnify_app/core/Api/dio_consumer.dart';
+import 'package:learnify_app/core/Api/endpoints.dart';
 import 'package:learnify_app/core/utils/color.dart';
-import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/chat_message_bubble.dart';
-import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/rashed_app_bar.dart';
-import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/message_input_field.dart';
 import 'package:learnify_app/features/rashed_ai/presentation/view/rashed_menu_view.dart';
+import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/chat_message_bubble.dart';
+import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/message_input_field.dart';
+import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/message_input_field.dart';
+import 'package:learnify_app/features/rashed_ai/presentation/view/widgets/rashed_app_bar.dart';
 
 class RashedAiView extends StatefulWidget {
   const RashedAiView({super.key});
@@ -51,19 +55,42 @@ class _RashedAiViewState extends State<RashedAiView> {
     _messageController.clear();
     _scrollToBottom();
 
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            text: 'Nice to meet you too, Saeed!\nHow can I assist you?',
-            isUser: false,
-            timestamp: DateTime.now(),
-          ),
+    // Call AI endpoint
+    () async {
+      try {
+        final consumer = DioConsumer(
+          dio: Dio(),
+          baseUrl: Endpoints.baseMessageUrl,
         );
-        _isLoading = false;
-      });
-      _scrollToBottom();
-    });
+        final resp = await consumer.post(
+          '/api/v1/message/ai/send',
+          data: {'message': text},
+        );
+
+        final aiReply = resp != null && resp['aiReply'] != null
+            ? resp['aiReply'].toString()
+            : 'No reply from AI';
+
+        setState(() {
+          _messages.add(
+            ChatMessage(
+              text: aiReply,
+              isUser: false,
+              timestamp: DateTime.now(),
+            ),
+          );
+          _isLoading = false;
+        });
+        _scrollToBottom();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to get AI reply: $e')));
+        }
+        setState(() => _isLoading = false);
+      }
+    }();
   }
 
   void _scrollToBottom() {
@@ -183,7 +210,7 @@ class _RashedAiViewState extends State<RashedAiView> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.primaryColor.withOpacity(0.1),
+              color: AppColors.primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(

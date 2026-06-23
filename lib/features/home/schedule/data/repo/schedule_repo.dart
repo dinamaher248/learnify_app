@@ -1,6 +1,6 @@
 import 'package:learnify_app/core/Api/endpoints.dart';
 
-import '../../../../../core/Api/api_consumer.dart';
+import '../../../../../../core/Api/api_consumer.dart';
 import '../models/schedule_model.dart';
 
 class ScheduleRepo {

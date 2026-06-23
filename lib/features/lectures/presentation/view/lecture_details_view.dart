@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
-import '../../../../core/Api/endpoints.dart';
-import '../../../../core/routing/app_router.dart';
+import '../../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/endpoints.dart';
+import '../../../../../core/routing/app_router.dart';
 import '../../../attendance/presentation/view/attendance_view.dart';
 import '../../data/repo/lecture_details_repo.dart';
 import 'widgets/detail_item.dart';
@@ -45,10 +45,7 @@ class LectureDetailsView extends StatelessWidget {
               isChecked: true,
               onChanged: (val) {},
               onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const AttendanceDialog(),
-                );
+                context.push(AppRouter.attendancePath, extra: lecture.id);
               },
             ),
 
@@ -93,7 +90,7 @@ class LectureDetailsView extends StatelessWidget {
               onChanged: (val) {},
               onTap: lecture.hasAssignment
                   ? () {
-                      context.push(AppRouter.assignmentPath);
+                      context.push(AppRouter.assignmentPath, extra: lecture.id);
                     }
                   : null,
             ),

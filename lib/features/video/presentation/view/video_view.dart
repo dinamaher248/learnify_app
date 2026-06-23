@@ -22,9 +22,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/Api/dio_consumer.dart';
+import '../../../../../core/Api/dio_consumer.dart';
 
-import '../../../../core/Api/endpoints.dart';
+import '../../../../../core/Api/endpoints.dart';
 
 import '../../data/repo/lecture_video_repo.dart';
 

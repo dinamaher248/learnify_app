@@ -17,3 +17,13 @@ class ProfileFailure extends ProfileState {
 
   ProfileFailure(this.error);
 }
+
+class ProfileUpdateLoading extends ProfileState {}
+
+class ProfileUpdateSuccess extends ProfileState {}
+
+class ProfileUpdateFailure extends ProfileState {
+  final String error;
+
+  ProfileUpdateFailure(this.error);
+}

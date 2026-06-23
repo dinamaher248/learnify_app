@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../../../core/cache/cache_helper.dart';
 import '../../../../../core/utils/assets.dart';
 
 class CustomFAB extends StatelessWidget {
-  const CustomFAB({super.key, required this.currentIndex, required this.onTap});
+  CustomFAB({super.key, required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final Function(int) onTap;
+  final role = CacheHelper.getData(key: 'role');
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class CustomFAB extends StatelessWidget {
           ),
           SizedBox(height: 1.h),
           Text(
-            "Courses",
+            role == 'Parent' ? 'Attendance' : "Courses",
             style: TextStyle(
               color: isActive
                   ? const Color(0xff5047E4)

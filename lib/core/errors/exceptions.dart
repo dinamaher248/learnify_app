@@ -7,11 +7,21 @@ class ServerException implements Exception {
   ServerException({required this.errorModel});
 }
 
-
- 
-
-  void handelDioException(DioException e) {
+void handelDioException(DioException e) {
   final data = e.response?.data;
+
+  ErrorModel getErrorModel() {
+    if (data is Map<String, dynamic>) {
+      return ErrorModel.fromJson(data);
+    }
+
+    return ErrorModel(
+      errorMessage:
+          e.response?.statusMessage ??
+          e.message ??
+          'Unknown error',
+    );
+  }
 
   switch (e.type) {
     case DioExceptionType.connectionTimeout:
@@ -22,7 +32,7 @@ class ServerException implements Exception {
     case DioExceptionType.connectionError:
     case DioExceptionType.unknown:
       throw ServerException(
-        errorModel: ErrorModel.fromJson(data ?? {}),
+        errorModel: getErrorModel(),
       );
 
     case DioExceptionType.badResponse:
@@ -33,9 +43,15 @@ class ServerException implements Exception {
         case 404:
         case 409:
         case 422:
+        case 429:
         case 504:
           throw ServerException(
-            errorModel: ErrorModel.fromJson(data ?? {}),
+            errorModel: getErrorModel(),
+          );
+
+        default:
+          throw ServerException(
+            errorModel: getErrorModel(),
           );
       }
   }

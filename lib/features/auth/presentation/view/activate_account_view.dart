@@ -2,9 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:learnify_app/core/Api/endpoints.dart';
-import 'package:learnify_app/core/routing/app_router.dart';
 import 'package:learnify_app/core/utils/app_styles.dart';
 import 'package:learnify_app/features/auth/presentation/view/main_login.dart';
 import 'package:learnify_app/shared/widgets/custom_widgets.dart';
@@ -18,7 +16,8 @@ import '../view_models/auth_cubit.dart';
 import '../view_models/auth_state.dart';
 
 class ActivateAccountView extends StatelessWidget {
-  const ActivateAccountView({super.key});
+  ActivateAccountView({super.key, required this.isParentApp});
+  bool isParentApp;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +46,7 @@ class _ActivateAccountBodyState extends State<_ActivateAccountBody> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _rememberMe = false;
+  final bool _rememberMe = false;
 
   String? _codeError;
   String? _passwordError;

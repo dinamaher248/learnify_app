@@ -3,10 +3,12 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../../../../core/utils/app_styles.dart';
+import '../../../../../../core/utils/app_styles.dart';
 
 class UploadArea extends StatelessWidget {
-  const UploadArea({super.key});
+  final VoidCallback? onUploadPressed;
+
+  const UploadArea({super.key, this.onUploadPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class UploadArea extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: onUploadPressed,
                 label: Text(
                   "Upload",
                   style: AppStyles.style20SemiBold.copyWith(

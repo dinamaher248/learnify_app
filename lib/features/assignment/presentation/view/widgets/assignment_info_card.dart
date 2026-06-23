@@ -3,7 +3,16 @@ import 'package:learnify_app/core/utils/app_styles.dart';
 import 'package:learnify_app/core/utils/assets.dart';
 
 class AssignmentInfoCard extends StatelessWidget {
-  const AssignmentInfoCard({super.key});
+  final String title;
+  final String? fileUrl;
+  final VoidCallback? onDownload;
+
+  const AssignmentInfoCard({
+    super.key,
+    required this.title,
+    this.fileUrl,
+    this.onDownload,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +35,21 @@ class AssignmentInfoCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 15),
-           Expanded(
+          Expanded(
             child: Text(
-              "Assignment 01:",
-              style: AppStyles.style20SemiBold.copyWith(color: const Color(0xFF24234D)),
+              title,
+              style: AppStyles.style20SemiBold.copyWith(
+                color: const Color(0xFF24234D),
+              ),
             ),
           ),
-          const Icon(Icons.download_outlined, color: Colors.black),
+          if (fileUrl != null && fileUrl!.isNotEmpty)
+            IconButton(
+              onPressed: onDownload,
+              icon: const Icon(Icons.download_outlined, color: Colors.black),
+            )
+          else
+            const Icon(Icons.download_outlined, color: Colors.black54),
         ],
       ),
     );
