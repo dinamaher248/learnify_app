@@ -8,9 +8,10 @@ class ParentCodeModel {
   });
 
   factory ParentCodeModel.fromJson(Map<String, dynamic> json) {
+    final data = json.containsKey('data') ? (json['data'] as Map<String, dynamic>? ?? json) : json;
     return ParentCodeModel(
-      code: json['code'] ?? '',
-      expiryDate: json['expiryDate'] ?? '',
+      code: data['code']?.toString() ?? '',
+      expiryDate: data['expiryDate']?.toString() ?? '',
     );
   }
 }
